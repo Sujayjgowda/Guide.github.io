@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL End-to-End Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #141414;
+    --surface2: #1a1a1a;
+    --surface3: #212121;
+    --border: #2a2a2a;
+    --border2: #333;
+    --green: #00ff88;
+    --green-dim: #00cc6a;
+    --green-glow: rgba(0,255,136,0.12);
+    --blue: #4d9fff;
+    --yellow: #ffd060;
+    --red: #ff5f5f;
+    --purple: #c084fc;
+    --orange: #fb923c;
+    --text: #e8e8e8;
+    --text-dim: #888;
+    --text-muted: #555;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    cursor: default;
+  }
+
+  /* scanline overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* progress bar */
+  #progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--green);
+    box-shadow: 0 0 12px var(--green);
+    z-index: 200;
+    transition: width 0.1s linear;
+  }
+
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 28px 100px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 64px 0 48px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--green);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    margin-bottom: 28px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  .back-link:hover { opacity: 1; }
+
+  .chip {
+    display: inline-block;
+    background: var(--green-glow);
+    border: 1px solid var(--green);
+    color: var(--green);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 9vw, 112px);
+    line-height: 0.92;
+    letter-spacing: 0.02em;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+
+  h1 span { color: var(--green); }
+
+  .header-sub {
+    color: var(--text-dim);
+    font-size: 14px;
+    max-width: 560px;
+    font-family: 'Space Mono', monospace;
+    line-height: 1.6;
+  }
+
+  .header-meta {
+    display: flex;
+    gap: 28px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .meta-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+  /* ── SEARCH ── */
+  .search-wrap {
+    position: sticky;
+    top: 12px;
+    z-index: 50;
+    margin-bottom: 40px;
+  }
+
+  .search-inner { position: relative; }
+
+  .search-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    padding: 13px 16px 13px 44px;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    backdrop-filter: blur(10px);
+  }
+
+  .search-input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px var(--green-glow);
+  }
+
+  .search-input::placeholder { color: var(--text-muted); }
+
+  .s-icon {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 15px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 48px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 4px;
+  }
+
+  .toc-head {
+    grid-column: 1 / -1;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--green);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .toc a {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 6px 10px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    border-radius: 3px;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+
+  .toc a:hover {
+    background: var(--green-glow);
+    border-color: rgba(0,255,136,0.2);
+    color: var(--green);
+  }
+
+  .toc-n {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--green);
+    min-width: 22px;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    margin-bottom: 64px;
+  }
+
+  .section.hidden { display: none; }
+
+  .sec-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sec-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--green);
+    line-height: 1;
+    opacity: 0.4;
+    min-width: 48px;
+  }
+
+  .sec-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: #fff;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+  }
+
+  .sec-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: #0a0a0a;
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 0;
+    position: relative;
+  }
+
+  .code-header {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .code-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--green);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .copy-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    background: none;
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    padding: 2px 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover { color: var(--green); border-color: var(--green); }
+
+  pre {
+    padding: 20px;
+    overflow-x: auto;
+    font-family: 'Space Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.9;
+    color: var(--text-dim);
+  }
+
+  /* SQL syntax colors */
+  .kw { color: var(--blue); font-weight: 700; }       /* keywords */
+  .fn { color: var(--yellow); }                         /* functions */
+  .str { color: var(--green); }                         /* strings */
+  .num { color: var(--orange); }                        /* numbers */
+  .cmt { color: var(--text-muted); font-style: italic; } /* comments */
+  .tbl { color: var(--purple); }                        /* table names */
+  .col { color: var(--text); }                          /* columns */
+  .op { color: var(--red); }                            /* operators */
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--border2); }
+
+  .card.green { border-left: 3px solid var(--green); }
+  .card.blue  { border-left: 3px solid var(--blue); }
+  .card.yellow{ border-left: 3px solid var(--yellow); }
+  .card.red   { border-left: 3px solid var(--red); }
+  .card.purple{ border-left: 3px solid var(--purple); }
+  .card.orange{ border-left: 3px solid var(--orange); }
+
+  .card-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .card.green  .card-title { color: var(--green); }
+  .card.blue   .card-title { color: var(--blue); }
+  .card.yellow .card-title { color: var(--yellow); }
+  .card.red    .card-title { color: var(--red); }
+  .card.purple .card-title { color: var(--purple); }
+  .card.orange .card-title { color: var(--orange); }
+
+  .card-body { color: var(--text-dim); font-size: 14px; line-height: 1.8; }
+  .card-body strong { color: var(--text); }
+
+  /* ── GRID ── */
+  .g2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  /* ── TABLE ── */
+  .tbl-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin: 16px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead tr {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border2);
+  }
+
+  th {
+    padding: 10px 16px;
+    text-align: left;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--green);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); color: var(--text); }
+  td strong { color: var(--text); }
+  td code {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    background: var(--surface3);
+    padding: 1px 6px;
+    border-radius: 2px;
+    color: var(--green);
+  }
+
+  /* ── ACCORDION ── */
+  .qa { border: 1px solid var(--border); border-radius: 4px; margin-bottom: 8px; overflow: hidden; }
+  .qa-q {
+    padding: 14px 18px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    transition: background 0.15s;
+    user-select: none;
+  }
+  .qa-q:hover { background: var(--surface2); }
+  .qa-icon { color: var(--green); font-size: 20px; font-weight: 300; transition: transform 0.3s; flex-shrink: 0; }
+  .qa.open .qa-icon { transform: rotate(45deg); }
+  .qa-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .qa.open .qa-a { max-height: 3000px; }
+  .qa-inner {
+    padding: 0 18px 18px;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.85;
+  }
+  .qa-inner strong { color: var(--green); }
+
+  /* ── INLINE CODE ── */
+  code {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    background: var(--surface3);
+    padding: 1px 6px;
+    border-radius: 2px;
+    color: var(--yellow);
+  }
+
+  /* ── TAGS ── */
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    padding: 3px 10px;
+    border-radius: 2px;
+    border: 1px solid;
+    text-transform: uppercase;
+  }
+  .tag.g { color: var(--green); border-color: rgba(0,255,136,0.3); background: rgba(0,255,136,0.05); }
+  .tag.b { color: var(--blue); border-color: rgba(77,159,255,0.3); background: rgba(77,159,255,0.05); }
+  .tag.y { color: var(--yellow); border-color: rgba(255,208,96,0.3); background: rgba(255,208,96,0.05); }
+  .tag.r { color: var(--red); border-color: rgba(255,95,95,0.3); background: rgba(255,95,95,0.05); }
+  .tag.p { color: var(--purple); border-color: rgba(192,132,252,0.3); background: rgba(192,132,252,0.05); }
+
+  /* ── HIGHLIGHT ── */
+  .hl-box {
+    background: linear-gradient(135deg, rgba(0,255,136,0.04), rgba(77,159,255,0.04));
+    border: 1px solid rgba(0,255,136,0.15);
+    border-radius: 4px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+  }
+  .hl-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--green);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  /* execution order */
+  .exec-order {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 16px 0;
+    align-items: center;
+  }
+  .exec-step {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 2px;
+    border: 1px solid var(--border2);
+    color: var(--text-dim);
+    position: relative;
+  }
+  .exec-step.active { border-color: var(--green); color: var(--green); background: var(--green-glow); }
+  .exec-arrow { color: var(--text-muted); font-size: 12px; }
+
+  /* ul list */
+  ul.list { list-style: none; padding: 0; }
+  ul.list li {
+    padding: 5px 0;
+    color: var(--text-dim);
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+  }
+  ul.list li:last-child { border-bottom: none; }
+  ul.list li::before { content: '›'; color: var(--green); flex-shrink: 0; font-weight: 700; }
+  ul.list li strong { color: var(--text); }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<div class="container">
+
+  <header>
+    <a class="back-link" href="index.html">← Back to Interview Hub</a>
+    <div class="chip">Complete Reference Guide</div>
+    <h1>SQL<br><span>End-to-End</span></h1>
+    <p class="header-sub">// Every clause, function & pattern — from SELECT to window functions — with real examples and interview Q&A</p>
+    <div class="header-meta">
+      <div class="meta-item"><span class="meta-dot"></span> SELECT → GROUP BY → JOINS</div>
+      <div class="meta-item"><span class="meta-dot" style="background:var(--blue)"></span> Subqueries & CTEs</div>
+      <div class="meta-item"><span class="meta-dot" style="background:var(--yellow)"></span> Window Functions</div>
+      <div class="meta-item"><span class="meta-dot" style="background:var(--purple)"></span> Interview Scenarios</div>
+    </div>
+  </header>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <div class="search-inner">
+      <span class="s-icon">_</span>
+      <input class="search-input" id="searchInput" placeholder="Search clauses, functions, examples..." autocomplete="off">
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <nav class="toc">
+    <div class="toc-head">// Table of Contents</div>
+    <a href="#s1"><span class="toc-n">01</span> SELECT & FROM</a>
+    <a href="#s2"><span class="toc-n">02</span> WHERE Clause</a>
+    <a href="#s3"><span class="toc-n">03</span> GROUP BY & HAVING</a>
+    <a href="#s4"><span class="toc-n">04</span> ORDER BY & LIMIT</a>
+    <a href="#s5"><span class="toc-n">05</span> JOINs (All Types)</a>
+    <a href="#s6"><span class="toc-n">06</span> Aggregate Functions</a>
+    <a href="#s7"><span class="toc-n">07</span> Subqueries</a>
+    <a href="#s8"><span class="toc-n">08</span> CTEs (WITH clause)</a>
+    <a href="#s9"><span class="toc-n">09</span> Window Functions</a>
+    <a href="#s10"><span class="toc-n">10</span> String Functions</a>
+    <a href="#s11"><span class="toc-n">11</span> Date Functions</a>
+    <a href="#s12"><span class="toc-n">12</span> CASE WHEN</a>
+    <a href="#s13"><span class="toc-n">13</span> Indexes & Performance</a>
+    <a href="#s14"><span class="toc-n">14</span> DDL & DML</a>
+    <a href="#s15"><span class="toc-n">15</span> Interview Q&A</a>
+  </nav>
+
+  <!-- ════════ SECTION 1 ════════ -->
+  <section class="section" id="s1">
+    <div class="sec-head">
+      <div class="sec-num">01</div>
+      <div>
+        <div class="sec-title">SELECT & FROM</div>
+        <div class="sec-sub">// The foundation of every query — retrieving data</div>
+      </div>
+    </div>
+
+    <div class="hl-box">
+      <div class="hl-label">SQL Execution Order — Always Remember This</div>
+      <div class="exec-order">
+        <div class="exec-step">FROM</div><div class="exec-arrow">→</div>
+        <div class="exec-step">JOIN</div><div class="exec-arrow">→</div>
+        <div class="exec-step">WHERE</div><div class="exec-arrow">→</div>
+        <div class="exec-step">GROUP BY</div><div class="exec-arrow">→</div>
+        <div class="exec-step">HAVING</div><div class="exec-arrow">→</div>
+        <div class="exec-step active">SELECT</div><div class="exec-arrow">→</div>
+        <div class="exec-step">ORDER BY</div><div class="exec-arrow">→</div>
+        <div class="exec-step">LIMIT</div>
+      </div>
+      <div style="font-size:12px; color:var(--text-muted); font-family:'Space Mono',monospace;">SELECT is processed 6th — that's why you can't use SELECT aliases in WHERE or GROUP BY (in most DBs)</div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Basic SELECT Syntax</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="cmt">-- Select all columns</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">patients</span>;
+
+<span class="cmt">-- Select specific columns</span>
+<span class="kw">SELECT</span> <span class="col">patient_id</span>, <span class="col">first_name</span>, <span class="col">last_name</span>, <span class="col">age</span>
+<span class="kw">FROM</span> <span class="tbl">patients</span>;
+
+<span class="cmt">-- Column aliases with AS</span>
+<span class="kw">SELECT</span>
+    <span class="col">patient_id</span>               <span class="kw">AS</span> <span class="col">id</span>,
+    <span class="col">first_name</span> <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> <span class="col">last_name</span>  <span class="kw">AS</span> <span class="col">full_name</span>,
+    <span class="col">age</span>                      <span class="kw">AS</span> <span class="col">patient_age</span>
+<span class="kw">FROM</span> <span class="tbl">patients</span>;
+
+<span class="cmt">-- DISTINCT — removes duplicates</span>
+<span class="kw">SELECT DISTINCT</span> <span class="col">country</span>
+<span class="kw">FROM</span> <span class="tbl">adverse_events</span>;
+
+<span class="cmt">-- Expressions and calculations</span>
+<span class="kw">SELECT</span>
+    <span class="col">drug_name</span>,
+    <span class="col">unit_price</span> <span class="op">*</span> <span class="col">quantity</span>   <span class="kw">AS</span> <span class="col">total_cost</span>,
+    <span class="fn">ROUND</span>(<span class="col">dosage_mg</span> <span class="op">/</span> <span class="col">weight_kg</span>, <span class="num">2</span>)  <span class="kw">AS</span> <span class="col">dose_per_kg</span>
+<span class="kw">FROM</span> <span class="tbl">prescriptions</span>;
+      </pre>
+    </div>
+
+    <div class="g2">
+      <div class="card green">
+        <div class="card-title">SELECT variations</div>
+        <div class="card-body">
+          <ul class="list">
+            <li><code>SELECT *</code> — All columns (avoid in production)</li>
+            <li><code>SELECT DISTINCT</code> — Unique rows only</li>
+            <li><code>SELECT TOP n</code> — First n rows (SQL Server)</li>
+            <li><code>SELECT col AS alias</code> — Rename column in result</li>
+            <li><code>SELECT 1+1</code> — Expressions without a table</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card blue">
+        <div class="card-title">FROM variations</div>
+        <div class="card-body">
+          <ul class="list">
+            <li><code>FROM table</code> — Simple table</li>
+            <li><code>FROM table alias</code> — Table with alias</li>
+            <li><code>FROM (subquery) alias</code> — Derived table</li>
+            <li><code>FROM schema.table</code> — Fully qualified</li>
+            <li><code>FROM table1, table2</code> — Cross join (implicit)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ SECTION 2 ════════ -->
+  <section class="section" id="s2">
+    <div class="sec-head">
+      <div class="sec-num">02</div>
+      <div>
+        <div class="sec-title">WHERE Clause</div>
+        <div class="sec-sub">// Filter rows before aggregation</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">WHERE — All Operators</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="cmt">-- Comparison operators</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">WHERE</span> <span class="col">severity</span> <span class="op">=</span> <span class="str">'Serious'</span>
+  <span class="kw">AND</span> <span class="col">report_date</span> <span class="op">>=</span> <span class="str">'2024-01-01'</span>;
+
+<span class="cmt">-- IN — match multiple values</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">cases</span>
+<span class="kw">WHERE</span> <span class="col">country</span> <span class="kw">IN</span> (<span class="str">'India'</span>, <span class="str">'USA'</span>, <span class="str">'UK'</span>);
+
+<span class="cmt">-- BETWEEN — inclusive range</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">patients</span>
+<span class="kw">WHERE</span> <span class="col">age</span> <span class="kw">BETWEEN</span> <span class="num">18</span> <span class="kw">AND</span> <span class="num">65</span>;
+
+<span class="cmt">-- LIKE — pattern matching</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">drugs</span>
+<span class="kw">WHERE</span> <span class="col">drug_name</span> <span class="kw">LIKE</span> <span class="str">'Ator%'</span>;       <span class="cmt">-- starts with Ator</span>
+<span class="kw">WHERE</span> <span class="col">drug_name</span> <span class="kw">LIKE</span> <span class="str">'%statin'</span>;     <span class="cmt">-- ends with statin</span>
+<span class="kw">WHERE</span> <span class="col">drug_name</span> <span class="kw">LIKE</span> <span class="str">'%stat%'</span>;     <span class="cmt">-- contains stat</span>
+<span class="kw">WHERE</span> <span class="col">drug_name</span> <span class="kw">LIKE</span> <span class="str">'A_a%'</span>;       <span class="cmt">-- _ = any single char</span>
+
+<span class="cmt">-- IS NULL / IS NOT NULL</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">cases</span>
+<span class="kw">WHERE</span> <span class="col">resolution_date</span> <span class="kw">IS NULL</span>;     <span class="cmt">-- unresolved cases</span>
+
+<span class="cmt">-- NOT operator</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">WHERE</span> <span class="col">outcome</span> <span class="kw">NOT IN</span> (<span class="str">'Recovered'</span>, <span class="str">'Resolved'</span>);
+
+<span class="cmt">-- EXISTS — check if subquery returns rows</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">patients</span> p
+<span class="kw">WHERE EXISTS</span> (
+    <span class="kw">SELECT</span> <span class="num">1</span> <span class="kw">FROM</span> <span class="tbl">adverse_events</span> ae
+    <span class="kw">WHERE</span> ae.<span class="col">patient_id</span> <span class="op">=</span> p.<span class="col">patient_id</span>
+      <span class="kw">AND</span> ae.<span class="col">severity</span> <span class="op">=</span> <span class="str">'Fatal'</span>
+);
+      </pre>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Operator</th><th>Usage</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><code>=</code></td><td>Exact match</td><td><code>WHERE status = 'Active'</code></td></tr>
+          <tr><td><code>!= / &lt;&gt;</code></td><td>Not equal</td><td><code>WHERE status != 'Closed'</code></td></tr>
+          <tr><td><code>&gt; &lt; &gt;= &lt;=</code></td><td>Range comparison</td><td><code>WHERE age &gt;= 18</code></td></tr>
+          <tr><td><code>BETWEEN a AND b</code></td><td>Inclusive range</td><td><code>WHERE age BETWEEN 18 AND 65</code></td></tr>
+          <tr><td><code>IN (...)</code></td><td>Value in list</td><td><code>WHERE country IN ('US','UK')</code></td></tr>
+          <tr><td><code>NOT IN (...)</code></td><td>Value not in list</td><td><code>WHERE outcome NOT IN ('Fatal')</code></td></tr>
+          <tr><td><code>LIKE 'pat%'</code></td><td>Pattern match</td><td><code>WHERE name LIKE 'A%'</code></td></tr>
+          <tr><td><code>IS NULL</code></td><td>Null check</td><td><code>WHERE end_date IS NULL</code></td></tr>
+          <tr><td><code>EXISTS (subq)</code></td><td>Row existence check</td><td><code>WHERE EXISTS (SELECT 1 ...)</code></td></tr>
+          <tr><td><code>AND / OR / NOT</code></td><td>Logical operators</td><td><code>WHERE a=1 AND b=2 OR c=3</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ════════ SECTION 3 ════════ -->
+  <section class="section" id="s3">
+    <div class="sec-head">
+      <div class="sec-num">03</div>
+      <div>
+        <div class="sec-title">GROUP BY & HAVING</div>
+        <div class="sec-sub">// Aggregation and filtering aggregated results</div>
+      </div>
+    </div>
+
+    <div class="card yellow">
+      <div class="card-title">WHERE vs HAVING — The Key Difference</div>
+      <div class="card-body">
+        <strong>WHERE</strong> filters rows <em>before</em> grouping — acts on individual rows.<br>
+        <strong>HAVING</strong> filters groups <em>after</em> aggregation — acts on aggregate results.<br>
+        You <strong>cannot use aggregate functions in WHERE</strong> — use HAVING instead.
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">GROUP BY & HAVING Examples</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="cmt">-- Count cases per country</span>
+<span class="kw">SELECT</span>
+    <span class="col">country</span>,
+    <span class="fn">COUNT</span>(<span class="op">*</span>)        <span class="kw">AS</span> <span class="col">total_cases</span>,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> <span class="col">patient_id</span>)  <span class="kw">AS</span> <span class="col">unique_patients</span>
+<span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">GROUP BY</span> <span class="col">country</span>
+<span class="kw">ORDER BY</span> <span class="col">total_cases</span> <span class="kw">DESC</span>;
+
+<span class="cmt">-- HAVING: only countries with 10+ serious cases</span>
+<span class="kw">SELECT</span>
+    <span class="col">country</span>,
+    <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="col">serious_cases</span>
+<span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">WHERE</span> <span class="col">severity</span> <span class="op">=</span> <span class="str">'Serious'</span>          <span class="cmt">-- filter rows FIRST</span>
+<span class="kw">GROUP BY</span> <span class="col">country</span>
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">>=</span> <span class="num">10</span>               <span class="cmt">-- filter groups AFTER</span>
+<span class="kw">ORDER BY</span> <span class="col">serious_cases</span> <span class="kw">DESC</span>;
+
+<span class="cmt">-- Multi-column GROUP BY</span>
+<span class="kw">SELECT</span>
+    <span class="col">drug_name</span>,
+    <span class="col">reaction_type</span>,
+    <span class="fn">COUNT</span>(<span class="op">*</span>)            <span class="kw">AS</span> <span class="col">case_count</span>,
+    <span class="fn">AVG</span>(<span class="col">patient_age</span>)    <span class="kw">AS</span> <span class="col">avg_age</span>,
+    <span class="fn">MAX</span>(<span class="col">report_date</span>)    <span class="kw">AS</span> <span class="col">latest_report</span>
+<span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">GROUP BY</span> <span class="col">drug_name</span>, <span class="col">reaction_type</span>
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">></span> <span class="num">5</span>
+   <span class="kw">AND</span> <span class="fn">AVG</span>(<span class="col">patient_age</span>) <span class="op">></span> <span class="num">40</span>;
+
+<span class="cmt">-- ROLLUP — adds subtotals and grand total</span>
+<span class="kw">SELECT</span> <span class="col">country</span>, <span class="col">drug_name</span>, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="col">cnt</span>
+<span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">GROUP BY ROLLUP</span>(<span class="col">country</span>, <span class="col">drug_name</span>);
+      </pre>
+    </div>
+  </section>
+
+  <!-- ════════ SECTION 4 ════════ -->
+  <section class="section" id="s4">
+    <div class="sec-head">
+      <div class="sec-num">04</div>
+      <div>
+        <div class="sec-title">ORDER BY & LIMIT</div>
+        <div class="sec-sub">// Sorting and paginating results</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">ORDER BY & LIMIT / OFFSET</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="cmt">-- Basic sorting</span>
+<span class="kw">SELECT</span> <span class="col">case_id</span>, <span class="col">report_date</span>, <span class="col">severity</span>
+<span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">ORDER BY</span> <span class="col">report_date</span> <span class="kw">DESC</span>;         <span class="cmt">-- newest first</span>
+
+<span class="cmt">-- Multi-column sort</span>
+<span class="kw">ORDER BY</span> <span class="col">country</span> <span class="kw">ASC</span>, <span class="col">report_date</span> <span class="kw">DESC</span>;
+
+<span class="cmt">-- Sort with NULL handling</span>
+<span class="kw">ORDER BY</span> <span class="col">resolution_date</span> <span class="kw">DESC NULLS LAST</span>;
+
+<span class="cmt">-- LIMIT / FETCH FIRST (top N rows)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">ORDER BY</span> <span class="col">report_date</span> <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">10</span>;                            <span class="cmt">-- MySQL / PostgreSQL</span>
+
+<span class="cmt">-- Pagination with OFFSET</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">cases</span>
+<span class="kw">ORDER BY</span> <span class="col">case_id</span>
+<span class="kw">LIMIT</span> <span class="num">20</span> <span class="kw">OFFSET</span> <span class="num">40</span>;                 <span class="cmt">-- page 3 (rows 41-60)</span>
+
+<span class="cmt">-- TOP n (SQL Server / MS Access)</span>
+<span class="kw">SELECT TOP</span> <span class="num">5</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">ORDER BY</span> <span class="col">severity_score</span> <span class="kw">DESC</span>;
+
+<span class="cmt">-- FETCH FIRST (Oracle / DB2 / PostgreSQL 13+)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">cases</span>
+<span class="kw">ORDER BY</span> <span class="col">report_date</span>
+<span class="kw">FETCH FIRST</span> <span class="num">10</span> <span class="kw">ROWS ONLY</span>;
+      </pre>
+    </div>
+  </section>
+
+  <!-- ════════ SECTION 5 ════════ -->
+  <section class="section" id="s5">
+    <div class="sec-head">
+      <div class="sec-num">05</div>
+      <div>
+        <div class="sec-title">JOINs — All Types</div>
+        <div class="sec-sub">// Combining data from multiple tables</div>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div class="card green">
+        <div class="card-title">INNER JOIN</div>
+        <div class="card-body">Returns rows where there is a <strong>match in both tables</strong>. Non-matching rows from either table are excluded.</div>
+      </div>
+      <div class="card blue">
+        <div class="card-title">LEFT JOIN (LEFT OUTER)</div>
+        <div class="card-body">Returns <strong>all rows from the left table</strong> + matching rows from right. Non-matches on right = NULL.</div>
+      </div>
+      <div class="card yellow">
+        <div class="card-title">RIGHT JOIN (RIGHT OUTER)</div>
+        <div class="card-body">Returns <strong>all rows from the right table</strong> + matching rows from left. Non-matches on left = NULL.</div>
+      </div>
+      <div class="card purple">
+        <div class="card-title">FULL OUTER JOIN</div>
+        <div class="card-body">Returns <strong>all rows from both tables</strong>. NULLs where no match exists on either side.</div>
+      </div>
+      <div class="card red">
+        <div class="card-title">CROSS JOIN</div>
+        <div class="card-body">Returns the <strong>Cartesian product</strong> — every row of table A combined with every row of table B. No ON condition.</div>
+      </div>
+      <div class="card orange">
+        <div class="card-title">SELF JOIN</div>
+        <div class="card-body">Joins a table <strong>to itself</strong>. Used for hierarchical or comparative queries within one table.</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">All JOIN Types — Examples</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="cmt">-- INNER JOIN: cases with matching patient records</span>
+<span class="kw">SELECT</span>
+    c.<span class="col">case_id</span>,
+    c.<span class="col">drug_name</span>,
+    p.<span class="col">first_name</span>,
+    p.<span class="col">age</span>,
+    p.<span class="col">country</span>
+<span class="kw">FROM</span> <span class="tbl">cases</span> c
+<span class="kw">INNER JOIN</span> <span class="tbl">patients</span> p
+    <span class="kw">ON</span> c.<span class="col">patient_id</span> <span class="op">=</span> p.<span class="col">patient_id</span>;
+
+<span class="cmt">-- LEFT JOIN: all cases, even without patient info</span>
+<span class="kw">SELECT</span>
+    c.<span class="col">case_id</span>,
+    p.<span class="col">first_name</span>,   <span class="cmt">-- NULL if no patient found</span>
+    p.<span class="col">age</span>
+<span class="kw">FROM</span> <span class="tbl">cases</span> c
+<span class="kw">LEFT JOIN</span> <span class="tbl">patients</span> p
+    <span class="kw">ON</span> c.<span class="col">patient_id</span> <span class="op">=</span> p.<span class="col">patient_id</span>;
+
+<span class="cmt">-- Find cases with NO patient record (anti-join pattern)</span>
+<span class="kw">SELECT</span> c.<span class="col">case_id</span>
+<span class="kw">FROM</span> <span class="tbl">cases</span> c
+<span class="kw">LEFT JOIN</span> <span class="tbl">patients</span> p <span class="kw">ON</span> c.<span class="col">patient_id</span> <span class="op">=</span> p.<span class="col">patient_id</span>
+<span class="kw">WHERE</span> p.<span class="col">patient_id</span> <span class="kw">IS NULL</span>;         <span class="cmt">-- no match = orphan case</span>
+
+<span class="cmt">-- FULL OUTER JOIN</span>
+<span class="kw">SELECT</span>
+    <span class="fn">COALESCE</span>(a.<span class="col">drug_name</span>, b.<span class="col">drug_name</span>) <span class="kw">AS</span> <span class="col">drug</span>,
+    a.<span class="col">q1_cases</span>,
+    b.<span class="col">q2_cases</span>
+<span class="kw">FROM</span> <span class="tbl">q1_report</span> a
+<span class="kw">FULL OUTER JOIN</span> <span class="tbl">q2_report</span> b
+    <span class="kw">ON</span> a.<span class="col">drug_name</span> <span class="op">=</span> b.<span class="col">drug_name</span>;
+
+<span class="cmt">-- Multi-table JOIN</span>
+<span class="kw">SELECT</span>
+    c.<span class="col">case_id</span>,
+    p.<span class="col">first_name</span>,
+    d.<span class="col">drug_name</span>,
+    d.<span class="col">atc_code</span>,
+    ae.<span class="col">reaction_term</span>
+<span class="kw">FROM</span> <span class="tbl">cases</span> c
+<span class="kw">JOIN</span> <span class="tbl">patients</span> p  <span class="kw">ON</span> c.<span class="col">patient_id</span> <span class="op">=</span> p.<span class="col">patient_id</span>
+<span class="kw">JOIN</span> <span class="tbl">drugs</span> d     <span class="kw">ON</span> c.<span class="col">drug_id</span>    <span class="op">=</span> d.<span class="col">drug_id</span>
+<span class="kw">JOIN</span> <span class="tbl">reactions</span> ae <span class="kw">ON</span> c.<span class="col">case_id</span>   <span class="op">=</span> ae.<span class="col">case_id</span>;
+
+<span class="cmt">-- SELF JOIN: find patients in the same country</span>
+<span class="kw">SELECT</span>
+    a.<span class="col">patient_id</span>  <span class="kw">AS</span> <span class="col">patient_1</span>,
+    b.<span class="col">patient_id</span>  <span class="kw">AS</span> <span class="col">patient_2</span>,
+    a.<span class="col">country</span>
+<span class="kw">FROM</span> <span class="tbl">patients</span> a
+<span class="kw">JOIN</span> <span class="tbl">patients</span> b
+    <span class="kw">ON</span> a.<span class="col">country</span> <span class="op">=</span> b.<span class="col">country</span>
+   <span class="kw">AND</span> a.<span class="col">patient_id</span> <span class="op"><</span> b.<span class="col">patient_id</span>; <span class="cmt">-- avoid duplicates</span>
+      </pre>
+    </div>
+  </section>
+
+  <!-- ════════ SECTION 6 ════════ -->
+  <section class="section" id="s6">
+    <div class="sec-head">
+      <div class="sec-num">06</div>
+      <div>
+        <div class="sec-title">Aggregate Functions</div>
+        <div class="sec-sub">// COUNT, SUM, AVG, MIN, MAX and more</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Aggregate Functions</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="kw">SELECT</span>
+    <span class="fn">COUNT</span>(<span class="op">*</span>)                   <span class="kw">AS</span> <span class="col">total_rows</span>,
+    <span class="fn">COUNT</span>(<span class="col">patient_id</span>)          <span class="kw">AS</span> <span class="col">non_null_patients</span>,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> <span class="col">drug_name</span>)  <span class="kw">AS</span> <span class="col">unique_drugs</span>,
+    <span class="fn">SUM</span>(<span class="col">case_count</span>)            <span class="kw">AS</span> <span class="col">total_cases</span>,
+    <span class="fn">AVG</span>(<span class="col">patient_age</span>)           <span class="kw">AS</span> <span class="col">avg_age</span>,
+    <span class="fn">MIN</span>(<span class="col">report_date</span>)           <span class="kw">AS</span> <span class="col">earliest_report</span>,
+    <span class="fn">MAX</span>(<span class="col">report_date</span>)           <span class="kw">AS</span> <span class="col">latest_report</span>,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(<span class="col">patient_age</span>), <span class="num">1</span>) <span class="kw">AS</span> <span class="col">avg_age_rounded</span>
+<span class="kw">FROM</span> <span class="tbl">adverse_events</span>;
+
+<span class="cmt">-- COUNT(*) vs COUNT(col): COUNT(*) counts all rows,</span>
+<span class="cmt">-- COUNT(col) ignores NULLs in that column</span>
+<span class="kw">SELECT</span>
+    <span class="fn">COUNT</span>(<span class="op">*</span>)               <span class="kw">AS</span> <span class="col">all_cases</span>,
+    <span class="fn">COUNT</span>(<span class="col">follow_up_date</span>)  <span class="kw">AS</span> <span class="col">cases_with_followup</span>
+<span class="kw">FROM</span> <span class="tbl">cases</span>;
+
+<span class="cmt">-- STRING_AGG / GROUP_CONCAT — aggregate strings</span>
+<span class="kw">SELECT</span>
+    <span class="col">patient_id</span>,
+    <span class="fn">STRING_AGG</span>(<span class="col">drug_name</span>, <span class="str">', '</span>) <span class="kw">AS</span> <span class="col">all_drugs_taken</span>
+<span class="kw">FROM</span> <span class="tbl">prescriptions</span>
+<span class="kw">GROUP BY</span> <span class="col">patient_id</span>;
+      </pre>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Function</th><th>NULLs</th><th>Result Type</th><th>Common Use</th></tr></thead>
+        <tbody>
+          <tr><td><code>COUNT(*)</code></td><td>Counts NULLs</td><td>Integer</td><td>Total rows in group</td></tr>
+          <tr><td><code>COUNT(col)</code></td><td>Ignores NULLs</td><td>Integer</td><td>Non-null values</td></tr>
+          <tr><td><code>COUNT(DISTINCT col)</code></td><td>Ignores NULLs</td><td>Integer</td><td>Unique values</td></tr>
+          <tr><td><code>SUM(col)</code></td><td>Ignores NULLs</td><td>Numeric</td><td>Total of a numeric column</td></tr>
+          <tr><td><code>AVG(col)</code></td><td>Ignores NULLs</td><td>Decimal</td><td>Mean value</td></tr>
+          <tr><td><code>MIN(col)</code></td><td>Ignores NULLs</td><td>Same as col</td><td>Smallest/earliest value</td></tr>
+          <tr><td><code>MAX(col)</code></td><td>Ignores NULLs</td><td>Same as col</td><td>Largest/latest value</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ════════ SECTION 7 ════════ -->
+  <section class="section" id="s7">
+    <div class="sec-head">
+      <div class="sec-num">07</div>
+      <div>
+        <div class="sec-title">Subqueries</div>
+        <div class="sec-sub">// Nested queries inside SELECT, FROM, WHERE</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Subquery Types</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="cmt">-- 1. Scalar subquery in SELECT (returns 1 value)</span>
+<span class="kw">SELECT</span>
+    <span class="col">country</span>,
+    <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="col">cases</span>,
+    (
+        <span class="kw">SELECT</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+    ) <span class="kw">AS</span> <span class="col">global_total</span>
+<span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">GROUP BY</span> <span class="col">country</span>;
+
+<span class="cmt">-- 2. Subquery in WHERE (filter using derived value)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">WHERE</span> <span class="col">patient_age</span> <span class="op">></span> (
+    <span class="kw">SELECT</span> <span class="fn">AVG</span>(<span class="col">patient_age</span>)
+    <span class="kw">FROM</span> <span class="tbl">adverse_events</span>          <span class="cmt">-- patients older than average</span>
+);
+
+<span class="cmt">-- 3. IN with subquery</span>
+<span class="kw">SELECT</span> <span class="col">drug_name</span> <span class="kw">FROM</span> <span class="tbl">drugs</span>
+<span class="kw">WHERE</span> <span class="col">drug_id</span> <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> <span class="kw">DISTINCT</span> <span class="col">drug_id</span>
+    <span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+    <span class="kw">WHERE</span> <span class="col">severity</span> <span class="op">=</span> <span class="str">'Fatal'</span>    <span class="cmt">-- drugs with fatal events</span>
+);
+
+<span class="cmt">-- 4. Derived table in FROM</span>
+<span class="kw">SELECT</span> <span class="col">country</span>, <span class="col">avg_cases</span>
+<span class="kw">FROM</span> (
+    <span class="kw">SELECT</span>
+        <span class="col">country</span>,
+        <span class="fn">AVG</span>(<span class="col">case_count</span>) <span class="kw">AS</span> <span class="col">avg_cases</span>
+    <span class="kw">FROM</span> <span class="tbl">monthly_summary</span>
+    <span class="kw">GROUP BY</span> <span class="col">country</span>
+) <span class="kw">AS</span> <span class="tbl">country_avg</span>
+<span class="kw">WHERE</span> <span class="col">avg_cases</span> <span class="op">></span> <span class="num">50</span>;
+
+<span class="cmt">-- 5. Correlated subquery (references outer query)</span>
+<span class="kw">SELECT</span>
+    p.<span class="col">patient_id</span>,
+    p.<span class="col">first_name</span>,
+    (
+        <span class="kw">SELECT</span> <span class="fn">COUNT</span>(<span class="op">*</span>)
+        <span class="kw">FROM</span> <span class="tbl">adverse_events</span> ae
+        <span class="kw">WHERE</span> ae.<span class="col">patient_id</span> <span class="op">=</span> p.<span class="col">patient_id</span>
+    ) <span class="kw">AS</span> <span class="col">total_events</span>
+<span class="kw">FROM</span> <span class="tbl">patients</span> p;
+      </pre>
+    </div>
+  </section>
+
+  <!-- ════════ SECTION 8 ════════ -->
+  <section class="section" id="s8">
+    <div class="sec-head">
+      <div class="sec-num">08</div>
+      <div>
+        <div class="sec-title">CTEs — WITH Clause</div>
+        <div class="sec-sub">// Common Table Expressions — clean, readable, reusable</div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-title">CTE vs Subquery</div>
+      <div class="card-body">
+        A CTE (<code>WITH</code> clause) does the same thing as a derived table subquery but is:<br>
+        → <strong>More readable</strong> — named and defined before the main query<br>
+        → <strong>Reusable</strong> — can reference the same CTE multiple times<br>
+        → <strong>Recursive</strong> — supports recursive queries (hierarchies, trees)<br>
+        → <strong>Debuggable</strong> — easier to isolate and test each step
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">CTE Examples</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="cmt">-- Basic CTE</span>
+<span class="kw">WITH</span> <span class="tbl">serious_cases</span> <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> <span class="op">*</span>
+    <span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+    <span class="kw">WHERE</span> <span class="col">severity</span> <span class="op">=</span> <span class="str">'Serious'</span>
+      <span class="kw">AND</span> <span class="col">report_date</span> <span class="op">>=</span> <span class="str">'2024-01-01'</span>
+)
+<span class="kw">SELECT</span> <span class="col">country</span>, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="col">count</span>
+<span class="kw">FROM</span> <span class="tbl">serious_cases</span>
+<span class="kw">GROUP BY</span> <span class="col">country</span>;
+
+<span class="cmt">-- Multiple CTEs (chain them with commas)</span>
+<span class="kw">WITH</span>
+<span class="tbl">case_counts</span> <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> <span class="col">drug_id</span>, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="col">total_cases</span>
+    <span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+    <span class="kw">GROUP BY</span> <span class="col">drug_id</span>
+),
+<span class="tbl">serious_counts</span> <span class="kw">AS</span> (
+    <span class="kw">SELECT</span> <span class="col">drug_id</span>, <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="col">serious_cases</span>
+    <span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+    <span class="kw">WHERE</span> <span class="col">severity</span> <span class="op">=</span> <span class="str">'Serious'</span>
+    <span class="kw">GROUP BY</span> <span class="col">drug_id</span>
+)
+<span class="kw">SELECT</span>
+    d.<span class="col">drug_name</span>,
+    cc.<span class="col">total_cases</span>,
+    sc.<span class="col">serious_cases</span>,
+    <span class="fn">ROUND</span>(sc.<span class="col">serious_cases</span> <span class="op">*</span> <span class="num">100.0</span> <span class="op">/</span> cc.<span class="col">total_cases</span>, <span class="num">2</span>) <span class="kw">AS</span> <span class="col">pct_serious</span>
+<span class="kw">FROM</span> <span class="tbl">drugs</span> d
+<span class="kw">JOIN</span> <span class="tbl">case_counts</span> cc  <span class="kw">ON</span> d.<span class="col">drug_id</span> <span class="op">=</span> cc.<span class="col">drug_id</span>
+<span class="kw">JOIN</span> <span class="tbl">serious_counts</span> sc <span class="kw">ON</span> d.<span class="col">drug_id</span> <span class="op">=</span> sc.<span class="col">drug_id</span>
+<span class="kw">ORDER BY</span> <span class="col">pct_serious</span> <span class="kw">DESC</span>;
+
+<span class="cmt">-- Recursive CTE (org hierarchy / tree traversal)</span>
+<span class="kw">WITH RECURSIVE</span> <span class="tbl">org_tree</span> <span class="kw">AS</span> (
+    <span class="cmt">-- Anchor: top-level (no manager)</span>
+    <span class="kw">SELECT</span> <span class="col">emp_id</span>, <span class="col">name</span>, <span class="col">manager_id</span>, <span class="num">1</span> <span class="kw">AS</span> <span class="col">level</span>
+    <span class="kw">FROM</span> <span class="tbl">employees</span>
+    <span class="kw">WHERE</span> <span class="col">manager_id</span> <span class="kw">IS NULL</span>
+
+    <span class="kw">UNION ALL</span>
+
+    <span class="cmt">-- Recursive: join children to parent</span>
+    <span class="kw">SELECT</span> e.<span class="col">emp_id</span>, e.<span class="col">name</span>, e.<span class="col">manager_id</span>, ot.<span class="col">level</span> <span class="op">+</span> <span class="num">1</span>
+    <span class="kw">FROM</span> <span class="tbl">employees</span> e
+    <span class="kw">JOIN</span> <span class="tbl">org_tree</span> ot <span class="kw">ON</span> e.<span class="col">manager_id</span> <span class="op">=</span> ot.<span class="col">emp_id</span>
+)
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">org_tree</span> <span class="kw">ORDER BY</span> <span class="col">level</span>, <span class="col">name</span>;
+      </pre>
+    </div>
+  </section>
+
+  <!-- ════════ SECTION 9 ════════ -->
+  <section class="section" id="s9">
+    <div class="sec-head">
+      <div class="sec-num">09</div>
+      <div>
+        <div class="sec-title">Window Functions</div>
+        <div class="sec-sub">// OVER(), PARTITION BY, ROW_NUMBER, RANK, LAG, LEAD</div>
+      </div>
+    </div>
+
+    <div class="hl-box">
+      <div class="hl-label">What makes window functions different?</div>
+      <p style="color:var(--text-dim); font-size:13px;">Unlike GROUP BY which <strong style="color:var(--text)">collapses rows</strong>, window functions <strong style="color:var(--text)">keep all rows</strong> and add a computed column based on a "window" of related rows. They never reduce the row count.</p>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Window Functions — Full Reference</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="cmt">-- ROW_NUMBER: unique sequential number per partition</span>
+<span class="kw">SELECT</span>
+    <span class="col">case_id</span>, <span class="col">country</span>, <span class="col">report_date</span>,
+    <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> <span class="col">country</span>
+        <span class="kw">ORDER BY</span> <span class="col">report_date</span>
+    ) <span class="kw">AS</span> <span class="col">row_num</span>
+<span class="kw">FROM</span> <span class="tbl">adverse_events</span>;
+
+<span class="cmt">-- RANK vs DENSE_RANK (ties handling)</span>
+<span class="kw">SELECT</span>
+    <span class="col">drug_name</span>, <span class="col">case_count</span>,
+    <span class="fn">RANK</span>()       <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="col">case_count</span> <span class="kw">DESC</span>) <span class="kw">AS</span> <span class="col">rank</span>,
+    <span class="fn">DENSE_RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="col">case_count</span> <span class="kw">DESC</span>) <span class="kw">AS</span> <span class="col">dense_rank</span>
+<span class="kw">FROM</span> <span class="tbl">drug_summary</span>;
+<span class="cmt">-- RANK skips numbers after ties (1,2,2,4)</span>
+<span class="cmt">-- DENSE_RANK does not skip (1,2,2,3)</span>
+
+<span class="cmt">-- Get the most recent case per country (top 1 per group)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> (
+    <span class="kw">SELECT</span>
+        <span class="op">*</span>,
+        <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (
+            <span class="kw">PARTITION BY</span> <span class="col">country</span>
+            <span class="kw">ORDER BY</span> <span class="col">report_date</span> <span class="kw">DESC</span>
+        ) <span class="kw">AS</span> <span class="col">rn</span>
+    <span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+) ranked
+<span class="kw">WHERE</span> <span class="col">rn</span> <span class="op">=</span> <span class="num">1</span>;
+
+<span class="cmt">-- Running total (cumulative SUM)</span>
+<span class="kw">SELECT</span>
+    <span class="col">report_date</span>,
+    <span class="col">daily_cases</span>,
+    <span class="fn">SUM</span>(<span class="col">daily_cases</span>) <span class="kw">OVER</span> (
+        <span class="kw">ORDER BY</span> <span class="col">report_date</span>
+        <span class="kw">ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</span>
+    ) <span class="kw">AS</span> <span class="col">cumulative_cases</span>
+<span class="kw">FROM</span> <span class="tbl">daily_summary</span>;
+
+<span class="cmt">-- Moving average (last 7 days)</span>
+<span class="kw">SELECT</span>
+    <span class="col">report_date</span>,
+    <span class="col">daily_cases</span>,
+    <span class="fn">AVG</span>(<span class="col">daily_cases</span>) <span class="kw">OVER</span> (
+        <span class="kw">ORDER BY</span> <span class="col">report_date</span>
+        <span class="kw">ROWS BETWEEN</span> <span class="num">6</span> <span class="kw">PRECEDING AND CURRENT ROW</span>
+    ) <span class="kw">AS</span> <span class="col">rolling_7day_avg</span>
+<span class="kw">FROM</span> <span class="tbl">daily_summary</span>;
+
+<span class="cmt">-- LAG/LEAD: compare to previous/next row</span>
+<span class="kw">SELECT</span>
+    <span class="col">report_date</span>,
+    <span class="col">daily_cases</span>,
+    <span class="fn">LAG</span>(<span class="col">daily_cases</span>, <span class="num">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="col">report_date</span>) <span class="kw">AS</span> <span class="col">prev_day</span>,
+    <span class="fn">LEAD</span>(<span class="col">daily_cases</span>, <span class="num">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="col">report_date</span>) <span class="kw">AS</span> <span class="col">next_day</span>,
+    <span class="col">daily_cases</span> <span class="op">-</span> <span class="fn">LAG</span>(<span class="col">daily_cases</span>, <span class="num">1</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="col">report_date</span>) <span class="kw">AS</span> <span class="col">day_change</span>
+<span class="kw">FROM</span> <span class="tbl">daily_summary</span>;
+
+<span class="cmt">-- NTILE: divide into quartiles</span>
+<span class="kw">SELECT</span>
+    <span class="col">patient_id</span>, <span class="col">age</span>,
+    <span class="fn">NTILE</span>(<span class="num">4</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="col">age</span>) <span class="kw">AS</span> <span class="col">age_quartile</span>
+<span class="kw">FROM</span> <span class="tbl">patients</span>;
+
+<span class="cmt">-- PERCENT_RANK and CUME_DIST</span>
+<span class="kw">SELECT</span>
+    <span class="col">drug_name</span>,
+    <span class="col">case_count</span>,
+    <span class="fn">PERCENT_RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="col">case_count</span>) <span class="kw">AS</span> <span class="col">pct_rank</span>,
+    <span class="fn">CUME_DIST</span>()    <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="col">case_count</span>) <span class="kw">AS</span> <span class="col">cume_dist</span>
+<span class="kw">FROM</span> <span class="tbl">drug_summary</span>;
+      </pre>
+    </div>
+  </section>
+
+  <!-- ════════ SECTION 10 ════════ -->
+  <section class="section" id="s10">
+    <div class="sec-head">
+      <div class="sec-num">10</div>
+      <div>
+        <div class="sec-title">String Functions</div>
+        <div class="sec-sub">// UPPER, LOWER, TRIM, CONCAT, SUBSTRING, REPLACE…</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">String Functions</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="kw">SELECT</span>
+    <span class="fn">UPPER</span>(<span class="col">drug_name</span>)                         <span class="kw">AS</span> <span class="col">upper_name</span>,
+    <span class="fn">LOWER</span>(<span class="col">drug_name</span>)                         <span class="kw">AS</span> <span class="col">lower_name</span>,
+    <span class="fn">LENGTH</span>(<span class="col">drug_name</span>)                        <span class="kw">AS</span> <span class="col">name_length</span>,
+    <span class="fn">TRIM</span>(<span class="col">drug_name</span>)                          <span class="kw">AS</span> <span class="col">trimmed</span>,
+    <span class="fn">LTRIM</span>(<span class="col">drug_name</span>)                         <span class="kw">AS</span> <span class="col">left_trimmed</span>,
+    <span class="fn">RTRIM</span>(<span class="col">drug_name</span>)                         <span class="kw">AS</span> <span class="col">right_trimmed</span>,
+    <span class="fn">REPLACE</span>(<span class="col">drug_name</span>, <span class="str">' '</span>, <span class="str">'_'</span>)            <span class="kw">AS</span> <span class="col">underscored</span>,
+    <span class="fn">SUBSTRING</span>(<span class="col">drug_name</span>, <span class="num">1</span>, <span class="num">5</span>)              <span class="kw">AS</span> <span class="col">first_5_chars</span>,
+    <span class="fn">LEFT</span>(<span class="col">drug_name</span>, <span class="num">3</span>)                       <span class="kw">AS</span> <span class="col">first_3</span>,
+    <span class="fn">RIGHT</span>(<span class="col">drug_name</span>, <span class="num">3</span>)                      <span class="kw">AS</span> <span class="col">last_3</span>,
+    <span class="fn">CONCAT</span>(<span class="col">first_name</span>, <span class="str">' '</span>, <span class="col">last_name</span>)      <span class="kw">AS</span> <span class="col">full_name</span>,
+    <span class="col">first_name</span> <span class="op">||</span> <span class="str">' '</span> <span class="op">||</span> <span class="col">last_name</span>          <span class="kw">AS</span> <span class="col">full_name_alt</span>,
+    <span class="fn">CHARINDEX</span>(<span class="str">'statin'</span>, <span class="col">drug_name</span>)          <span class="kw">AS</span> <span class="col">statin_pos</span>,
+    <span class="fn">LPAD</span>(<span class="col">case_id</span>::<span class="kw">TEXT</span>, <span class="num">8</span>, <span class="str">'0'</span>)             <span class="kw">AS</span> <span class="col">padded_id</span>
+<span class="kw">FROM</span> <span class="tbl">drugs</span>;
+      </pre>
+    </div>
+  </section>
+
+  <!-- ════════ SECTION 11 ════════ -->
+  <section class="section" id="s11">
+    <div class="sec-head">
+      <div class="sec-num">11</div>
+      <div>
+        <div class="sec-title">Date Functions</div>
+        <div class="sec-sub">// DATEPART, DATEDIFF, DATE_TRUNC, EXTRACT…</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Date Functions (PostgreSQL / ANSI SQL)</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="kw">SELECT</span>
+    <span class="fn">CURRENT_DATE</span>                                      <span class="kw">AS</span> <span class="col">today</span>,
+    <span class="fn">NOW</span>()                                              <span class="kw">AS</span> <span class="col">now_timestamp</span>,
+    <span class="fn">EXTRACT</span>(<span class="kw">YEAR FROM</span> <span class="col">report_date</span>)                  <span class="kw">AS</span> <span class="col">report_year</span>,
+    <span class="fn">EXTRACT</span>(<span class="kw">MONTH FROM</span> <span class="col">report_date</span>)                 <span class="kw">AS</span> <span class="col">report_month</span>,
+    <span class="fn">DATE_TRUNC</span>(<span class="str">'month'</span>, <span class="col">report_date</span>)                <span class="kw">AS</span> <span class="col">month_start</span>,
+    <span class="fn">DATE_TRUNC</span>(<span class="str">'year'</span>, <span class="col">report_date</span>)                 <span class="kw">AS</span> <span class="col">year_start</span>,
+    <span class="fn">AGE</span>(<span class="fn">CURRENT_DATE</span>, <span class="col">report_date</span>)                  <span class="kw">AS</span> <span class="col">days_since_report</span>,
+    <span class="fn">CURRENT_DATE</span> <span class="op">-</span> <span class="col">report_date</span>                       <span class="kw">AS</span> <span class="col">days_elapsed</span>,
+    <span class="col">report_date</span> <span class="op">+</span> <span class="kw">INTERVAL</span> <span class="str">'15 days'</span>               <span class="kw">AS</span> <span class="col">due_date</span>,
+    <span class="fn">TO_CHAR</span>(<span class="col">report_date</span>, <span class="str">'DD-Mon-YYYY'</span>)             <span class="kw">AS</span> <span class="col">formatted_date</span>
+<span class="kw">FROM</span> <span class="tbl">adverse_events</span>;
+
+<span class="cmt">-- Cases submitted within 15-day window (PV use case!)</span>
+<span class="kw">SELECT</span>
+    <span class="col">case_id</span>,
+    <span class="col">receipt_date</span>,
+    <span class="col">submission_date</span>,
+    (<span class="col">submission_date</span> <span class="op">-</span> <span class="col">receipt_date</span>) <span class="kw">AS</span> <span class="col">days_to_submit</span>,
+    <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> (<span class="col">submission_date</span> <span class="op">-</span> <span class="col">receipt_date</span>) <span class="op"><=</span> <span class="num">15</span>
+            <span class="kw">THEN</span> <span class="str">'On Time'</span>
+        <span class="kw">ELSE</span> <span class="str">'Late'</span>
+    <span class="kw">END</span> <span class="kw">AS</span> <span class="col">compliance_status</span>
+<span class="kw">FROM</span> <span class="tbl">icsr_submissions</span>;
+      </pre>
+    </div>
+  </section>
+
+  <!-- ════════ SECTION 12 ════════ -->
+  <section class="section" id="s12">
+    <div class="sec-head">
+      <div class="sec-num">12</div>
+      <div>
+        <div class="sec-title">CASE WHEN</div>
+        <div class="sec-sub">// Conditional logic inside SQL queries</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">CASE WHEN — All Patterns</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="cmt">-- Searched CASE (most common)</span>
+<span class="kw">SELECT</span>
+    <span class="col">case_id</span>,
+    <span class="col">patient_age</span>,
+    <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> <span class="col">patient_age</span> <span class="op"><</span> <span class="num">18</span>  <span class="kw">THEN</span> <span class="str">'Paediatric'</span>
+        <span class="kw">WHEN</span> <span class="col">patient_age</span> <span class="op"><</span> <span class="num">65</span>  <span class="kw">THEN</span> <span class="str">'Adult'</span>
+        <span class="kw">WHEN</span> <span class="col">patient_age</span> <span class="op">>=</span> <span class="num">65</span> <span class="kw">THEN</span> <span class="str">'Elderly'</span>
+        <span class="kw">ELSE</span> <span class="str">'Unknown'</span>
+    <span class="kw">END</span> <span class="kw">AS</span> <span class="col">age_group</span>
+<span class="kw">FROM</span> <span class="tbl">adverse_events</span>;
+
+<span class="cmt">-- Simple CASE (equality check only)</span>
+<span class="kw">SELECT</span>
+    <span class="kw">CASE</span> <span class="col">severity</span>
+        <span class="kw">WHEN</span> <span class="str">'Fatal'</span>         <span class="kw">THEN</span> <span class="num">4</span>
+        <span class="kw">WHEN</span> <span class="str">'Life-threatening'</span> <span class="kw">THEN</span> <span class="num">3</span>
+        <span class="kw">WHEN</span> <span class="str">'Serious'</span>        <span class="kw">THEN</span> <span class="num">2</span>
+        <span class="kw">WHEN</span> <span class="str">'Non-Serious'</span>    <span class="kw">THEN</span> <span class="num">1</span>
+        <span class="kw">ELSE</span> <span class="num">0</span>
+    <span class="kw">END</span> <span class="kw">AS</span> <span class="col">severity_score</span>
+<span class="kw">FROM</span> <span class="tbl">adverse_events</span>;
+
+<span class="cmt">-- CASE in aggregate (conditional counting)</span>
+<span class="kw">SELECT</span>
+    <span class="col">drug_name</span>,
+    <span class="fn">COUNT</span>(<span class="op">*</span>)  <span class="kw">AS</span> <span class="col">total_cases</span>,
+    <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> <span class="col">severity</span> <span class="op">=</span> <span class="str">'Fatal'</span>    <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> <span class="col">fatal_count</span>,
+    <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> <span class="col">severity</span> <span class="op">=</span> <span class="str">'Serious'</span>  <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> <span class="col">serious_count</span>,
+    <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> <span class="col">outcome</span> <span class="op">=</span> <span class="str">'Recovered'</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> <span class="col">recovered</span>
+<span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">GROUP BY</span> <span class="col">drug_name</span>;
+
+<span class="cmt">-- COALESCE — return first non-null value</span>
+<span class="kw">SELECT</span>
+    <span class="col">case_id</span>,
+    <span class="fn">COALESCE</span>(<span class="col">reporter_email</span>, <span class="col">reporter_phone</span>, <span class="str">'No contact'</span>) <span class="kw">AS</span> <span class="col">contact</span>
+<span class="kw">FROM</span> <span class="tbl">cases</span>;
+
+<span class="cmt">-- NULLIF — return NULL if two values are equal</span>
+<span class="kw">SELECT</span> <span class="fn">NULLIF</span>(<span class="col">denominator</span>, <span class="num">0</span>)  <span class="cmt">-- avoids divide-by-zero</span>
+<span class="kw">FROM</span> <span class="tbl">calculations</span>;
+      </pre>
+    </div>
+  </section>
+
+  <!-- ════════ SECTION 13 ════════ -->
+  <section class="section" id="s13">
+    <div class="sec-head">
+      <div class="sec-num">13</div>
+      <div>
+        <div class="sec-title">Indexes & Performance</div>
+        <div class="sec-sub">// Make queries fast — what interviewers love to ask</div>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div class="card green">
+        <div class="card-title">What is an Index?</div>
+        <div class="card-body">An index is a <strong>data structure</strong> (B-tree by default) that allows the database to find rows quickly without scanning the entire table. Like a book index — points to where the data is instead of reading every page.</div>
+      </div>
+      <div class="card red">
+        <div class="card-title">Index Trade-offs</div>
+        <div class="card-body">
+          <strong>Faster:</strong> SELECT, WHERE, JOIN, ORDER BY<br>
+          <strong>Slower:</strong> INSERT, UPDATE, DELETE (index must be maintained)<br>
+          <strong>Storage:</strong> Indexes use disk space
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">Indexes & EXPLAIN</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="cmt">-- Create index</span>
+<span class="kw">CREATE INDEX</span> idx_cases_country
+    <span class="kw">ON</span> <span class="tbl">adverse_events</span> (<span class="col">country</span>);
+
+<span class="cmt">-- Composite index (column order matters!)</span>
+<span class="kw">CREATE INDEX</span> idx_cases_country_date
+    <span class="kw">ON</span> <span class="tbl">adverse_events</span> (<span class="col">country</span>, <span class="col">report_date</span>);
+
+<span class="cmt">-- Unique index (enforces uniqueness)</span>
+<span class="kw">CREATE UNIQUE INDEX</span> idx_case_unique
+    <span class="kw">ON</span> <span class="tbl">cases</span> (<span class="col">worldwide_case_id</span>);
+
+<span class="cmt">-- EXPLAIN: see query execution plan</span>
+<span class="kw">EXPLAIN ANALYZE</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">WHERE</span> <span class="col">country</span> <span class="op">=</span> <span class="str">'India'</span>
+  <span class="kw">AND</span> <span class="col">report_date</span> <span class="op">>=</span> <span class="str">'2024-01-01'</span>;
+<span class="cmt">-- Look for: Seq Scan (bad) vs Index Scan (good)</span>
+      </pre>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Tip</th><th>Explanation</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Use WHERE on indexed columns</strong></td><td>Queries filter faster when WHERE clause columns are indexed</td></tr>
+          <tr><td><strong>Avoid functions on indexed cols</strong></td><td><code>WHERE UPPER(name) = 'X'</code> defeats the index — use functional index instead</td></tr>
+          <tr><td><strong>SELECT only needed columns</strong></td><td>Avoid <code>SELECT *</code> — fetching fewer columns reduces I/O</td></tr>
+          <tr><td><strong>Composite index left-prefix rule</strong></td><td>Index on (A,B,C) — queries on A or A+B or A+B+C use it; B alone does not</td></tr>
+          <tr><td><strong>Use LIMIT for large results</strong></td><td>Always paginate large result sets</td></tr>
+          <tr><td><strong>JOIN on indexed FK columns</strong></td><td>Foreign key columns used in JOINs should always be indexed</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ════════ SECTION 14 ════════ -->
+  <section class="section" id="s14">
+    <div class="sec-head">
+      <div class="sec-num">14</div>
+      <div>
+        <div class="sec-title">DDL & DML</div>
+        <div class="sec-sub">// CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, TRUNCATE</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">DDL — Data Definition Language</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="cmt">-- CREATE TABLE</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">adverse_events</span> (
+    <span class="col">case_id</span>        <span class="kw">SERIAL PRIMARY KEY</span>,
+    <span class="col">patient_id</span>     <span class="kw">INT NOT NULL</span>,
+    <span class="col">drug_name</span>      <span class="kw">VARCHAR</span>(<span class="num">200</span>) <span class="kw">NOT NULL</span>,
+    <span class="col">severity</span>       <span class="kw">VARCHAR</span>(<span class="num">50</span>)  <span class="kw">DEFAULT</span> <span class="str">'Non-Serious'</span>,
+    <span class="col">report_date</span>    <span class="kw">DATE NOT NULL</span>,
+    <span class="col">country</span>        <span class="kw">VARCHAR</span>(<span class="num">100</span>),
+    <span class="col">created_at</span>     <span class="kw">TIMESTAMP DEFAULT NOW</span>(),
+    <span class="kw">FOREIGN KEY</span> (<span class="col">patient_id</span>) <span class="kw">REFERENCES</span> <span class="tbl">patients</span>(<span class="col">patient_id</span>)
+);
+
+<span class="cmt">-- ALTER TABLE</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">adverse_events</span>
+    <span class="kw">ADD COLUMN</span> <span class="col">outcome</span> <span class="kw">VARCHAR</span>(<span class="num">100</span>);
+
+<span class="kw">ALTER TABLE</span> <span class="tbl">adverse_events</span>
+    <span class="kw">RENAME COLUMN</span> <span class="col">drug_name</span> <span class="kw">TO</span> <span class="col">suspect_drug</span>;
+
+<span class="cmt">-- DROP TABLE (destructive!)</span>
+<span class="kw">DROP TABLE IF EXISTS</span> <span class="tbl">temp_cases</span>;
+      </pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-label">DML — Data Manipulation Language</span><button class="copy-btn" onclick="copyCode(this)">copy</button></div>
+      <pre>
+<span class="cmt">-- INSERT single row</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">adverse_events</span> (<span class="col">patient_id</span>, <span class="col">drug_name</span>, <span class="col">severity</span>, <span class="col">report_date</span>)
+<span class="kw">VALUES</span> (<span class="num">1001</span>, <span class="str">'Atorvastatin'</span>, <span class="str">'Serious'</span>, <span class="str">'2024-06-15'</span>);
+
+<span class="cmt">-- INSERT from SELECT</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">archive_cases</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">WHERE</span> <span class="col">report_date</span> <span class="op"><</span> <span class="str">'2020-01-01'</span>;
+
+<span class="cmt">-- UPDATE</span>
+<span class="kw">UPDATE</span> <span class="tbl">adverse_events</span>
+<span class="kw">SET</span>    <span class="col">outcome</span> <span class="op">=</span> <span class="str">'Recovered'</span>,
+       <span class="col">updated_at</span> <span class="op">=</span> <span class="fn">NOW</span>()
+<span class="kw">WHERE</span>  <span class="col">case_id</span> <span class="op">=</span> <span class="num">5042</span>;
+
+<span class="cmt">-- DELETE specific rows</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">WHERE</span> <span class="col">report_date</span> <span class="op"><</span> <span class="str">'2015-01-01'</span>
+  <span class="kw">AND</span> <span class="col">severity</span> <span class="op">=</span> <span class="str">'Non-Serious'</span>;
+
+<span class="cmt">-- TRUNCATE (removes ALL rows, faster than DELETE)</span>
+<span class="kw">TRUNCATE TABLE</span> <span class="tbl">temp_staging</span>;
+
+<span class="cmt">-- UPSERT: INSERT or UPDATE if exists (PostgreSQL)</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">cases</span> (<span class="col">case_id</span>, <span class="col">status</span>)
+<span class="kw">VALUES</span> (<span class="num">9999</span>, <span class="str">'Open'</span>)
+<span class="kw">ON CONFLICT</span> (<span class="col">case_id</span>)
+<span class="kw">DO UPDATE SET</span> <span class="col">status</span> <span class="op">=</span> <span class="kw">EXCLUDED</span>.<span class="col">status</span>;
+      </pre>
+    </div>
+  </section>
+
+  <!-- ════════ SECTION 15 ════════ -->
+  <section class="section" id="s15">
+    <div class="sec-head">
+      <div class="sec-num">15</div>
+      <div>
+        <div class="sec-title">Interview Q&A</div>
+        <div class="sec-sub">// Real SQL interview questions with answers</div>
+      </div>
+    </div>
+
+    <div style="font-family:'Space Mono',monospace; font-size:10px; color:var(--green); letter-spacing:0.1em; margin-bottom:14px; text-transform:uppercase;">// Fundamentals</div>
+
+    <div class="qa">
+      <div class="qa-q">What is the difference between WHERE and HAVING?<span class="qa-icon">+</span></div>
+      <div class="qa-a"><div class="qa-inner">
+        <strong>WHERE</strong> filters individual rows <em>before</em> any grouping occurs. It cannot reference aggregate functions.<br><br>
+        <strong>HAVING</strong> filters groups <em>after</em> GROUP BY has aggregated the data. It can reference aggregate functions like COUNT(), SUM(), AVG().<br><br>
+        Example: <code>WHERE age &gt; 18</code> filters patients before counting. <code>HAVING COUNT(*) &gt; 5</code> filters groups that have more than 5 cases.<br><br>
+        Rule: If you want to filter aggregated results → use HAVING. Everything else → use WHERE.
+      </div></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q">What is the difference between RANK(), DENSE_RANK(), and ROW_NUMBER()?<span class="qa-icon">+</span></div>
+      <div class="qa-a"><div class="qa-inner">
+        Given values: 100, 100, 90, 80:<br><br>
+        <strong>ROW_NUMBER()</strong>: 1, 2, 3, 4 — unique, no ties, arbitrary tiebreak<br>
+        <strong>RANK()</strong>: 1, 1, 3, 4 — ties get same rank, next rank skips (gap after tie)<br>
+        <strong>DENSE_RANK()</strong>: 1, 1, 2, 3 — ties get same rank, next rank does NOT skip (no gap)<br><br>
+        Use ROW_NUMBER when you need exactly 1 row per group (top-N queries). Use RANK/DENSE_RANK when ties matter.
+      </div></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q">Write a query to find duplicate records in a table.<span class="qa-icon">+</span></div>
+      <div class="qa-a"><div class="qa-inner">
+<div class="code-block" style="margin:0"><pre>
+<span class="cmt">-- Find duplicates by case_id</span>
+<span class="kw">SELECT</span>
+    <span class="col">worldwide_case_id</span>,
+    <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">AS</span> <span class="col">occurrences</span>
+<span class="kw">FROM</span> <span class="tbl">icsr_cases</span>
+<span class="kw">GROUP BY</span> <span class="col">worldwide_case_id</span>
+<span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">></span> <span class="num">1</span>;
+
+<span class="cmt">-- Show all columns of duplicate rows</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">icsr_cases</span>
+<span class="kw">WHERE</span> <span class="col">worldwide_case_id</span> <span class="kw">IN</span> (
+    <span class="kw">SELECT</span> <span class="col">worldwide_case_id</span>
+    <span class="kw">FROM</span> <span class="tbl">icsr_cases</span>
+    <span class="kw">GROUP BY</span> <span class="col">worldwide_case_id</span>
+    <span class="kw">HAVING</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">></span> <span class="num">1</span>
+);
+</pre></div>
+      </div></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q">Write a query to find the Nth highest salary (or Nth highest case count).<span class="qa-icon">+</span></div>
+      <div class="qa-a"><div class="qa-inner">
+<div class="code-block" style="margin:0"><pre>
+<span class="cmt">-- Method 1: Using DENSE_RANK (best approach)</span>
+<span class="kw">SELECT</span> <span class="col">drug_name</span>, <span class="col">case_count</span>
+<span class="kw">FROM</span> (
+    <span class="kw">SELECT</span>
+        <span class="col">drug_name</span>,
+        <span class="col">case_count</span>,
+        <span class="fn">DENSE_RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="col">case_count</span> <span class="kw">DESC</span>) <span class="kw">AS</span> <span class="col">dr</span>
+    <span class="kw">FROM</span> <span class="tbl">drug_summary</span>
+) ranked
+<span class="kw">WHERE</span> <span class="col">dr</span> <span class="op">=</span> <span class="num">3</span>;  <span class="cmt">-- change 3 to any N</span>
+
+<span class="cmt">-- Method 2: Using LIMIT OFFSET</span>
+<span class="kw">SELECT DISTINCT</span> <span class="col">case_count</span>
+<span class="kw">FROM</span> <span class="tbl">drug_summary</span>
+<span class="kw">ORDER BY</span> <span class="col">case_count</span> <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">1</span> <span class="kw">OFFSET</span> <span class="num">2</span>;  <span class="cmt">-- OFFSET N-1</span>
+</pre></div>
+      </div></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q">What is the difference between DELETE, TRUNCATE and DROP?<span class="qa-icon">+</span></div>
+      <div class="qa-a"><div class="qa-inner">
+        <strong>DELETE</strong>: Removes specific rows based on WHERE clause. Logged row-by-row (slower). Can be rolled back. Table structure remains. Triggers fire.<br><br>
+        <strong>TRUNCATE</strong>: Removes ALL rows instantly. Minimal logging (faster). Cannot have WHERE clause. Usually cannot be rolled back (DB-dependent). Resets identity/auto-increment. Triggers do NOT fire.<br><br>
+        <strong>DROP</strong>: Removes the entire table — structure, data, indexes, constraints all gone. Irreversible (without backup).<br><br>
+        Memory tip: DELETE = selective removal, TRUNCATE = empty the table, DROP = destroy the table.
+      </div></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q">What is a self join? Give a real example.<span class="qa-icon">+</span></div>
+      <div class="qa-a"><div class="qa-inner">
+        A self join joins a table to itself using two different aliases. Used when rows in a table relate to other rows in the same table.<br><br>
+        <strong>Example — find patients from the same country:</strong>
+<div class="code-block" style="margin:8px 0 0"><pre>
+<span class="kw">SELECT</span>
+    a.<span class="col">patient_id</span>  <span class="kw">AS</span> <span class="col">patient_1</span>,
+    b.<span class="col">patient_id</span>  <span class="kw">AS</span> <span class="col">patient_2</span>,
+    a.<span class="col">country</span>
+<span class="kw">FROM</span> <span class="tbl">patients</span> a
+<span class="kw">JOIN</span> <span class="tbl">patients</span> b
+    <span class="kw">ON</span> a.<span class="col">country</span> <span class="op">=</span> b.<span class="col">country</span>
+   <span class="kw">AND</span> a.<span class="col">patient_id</span> <span class="op"><</span> b.<span class="col">patient_id</span>;
+</pre></div>
+      </div></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q">PV specific: Write a query to find all drugs that have more than 10 serious cases submitted in 2024, ranked by case count.<span class="qa-icon">+</span></div>
+      <div class="qa-a"><div class="qa-inner">
+<div class="code-block" style="margin:0"><pre>
+<span class="kw">SELECT</span>
+    <span class="col">drug_name</span>,
+    <span class="fn">COUNT</span>(<span class="op">*</span>)                                   <span class="kw">AS</span> <span class="col">serious_cases</span>,
+    <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> <span class="col">country</span>)                    <span class="kw">AS</span> <span class="col">countries_affected</span>,
+    <span class="fn">MIN</span>(<span class="col">report_date</span>)                            <span class="kw">AS</span> <span class="col">first_report</span>,
+    <span class="fn">MAX</span>(<span class="col">report_date</span>)                            <span class="kw">AS</span> <span class="col">latest_report</span>,
+    <span class="fn">RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">DESC</span>)      <span class="kw">AS</span> <span class="col">rank_by_cases</span>
+<span class="kw">FROM</span> <span class="tbl">adverse_events</span>
+<span class="kw">WHERE</span>
+    <span class="col">severity</span>    <span class="op">=</span> <span class="str">'Serious'</span>
+    <span class="kw">AND</span> <span class="fn">EXTRACT</span>(<span class="kw">YEAR FROM</span> <span class="col">report_date</span>) <span class="op">=</span> <span class="num">2024</span>
+<span class="kw">GROUP BY</span>
+    <span class="col">drug_name</span>
+<span class="kw">HAVING</span>
+    <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="op">></span> <span class="num">10</span>
+<span class="kw">ORDER BY</span>
+    <span class="col">serious_cases</span> <span class="kw">DESC</span>;
+</pre></div>
+      </div></div>
+    </div>
+
+    <div class="qa">
+      <div class="qa-q">Write a query to check ICSR submission compliance — cases submitted within 15 days vs late.<span class="qa-icon">+</span></div>
+      <div class="qa-a"><div class="qa-inner">
+<div class="code-block" style="margin:0"><pre>
+<span class="kw">WITH</span> <span class="tbl">compliance_check</span> <span class="kw">AS</span> (
+    <span class="kw">SELECT</span>
+        <span class="col">case_id</span>,
+        <span class="col">receipt_date</span>,
+        <span class="col">submission_date</span>,
+        <span class="col">country</span>,
+        <span class="col">severity</span>,
+        (<span class="col">submission_date</span> <span class="op">-</span> <span class="col">receipt_date</span>) <span class="kw">AS</span> <span class="col">days_to_submit</span>,
+        <span class="kw">CASE</span>
+            <span class="kw">WHEN</span> <span class="col">submission_date</span> <span class="kw">IS NULL</span>
+                <span class="kw">THEN</span> <span class="str">'Not Yet Submitted'</span>
+            <span class="kw">WHEN</span> (<span class="col">submission_date</span> <span class="op">-</span> <span class="col">receipt_date</span>) <span class="op"><=</span> <span class="num">15</span>
+                <span class="kw">THEN</span> <span class="str">'Compliant'</span>
+            <span class="kw">ELSE</span> <span class="str">'Late'</span>
+        <span class="kw">END</span> <span class="kw">AS</span> <span class="col">status</span>
+    <span class="kw">FROM</span> <span class="tbl">icsr_submissions</span>
+    <span class="kw">WHERE</span> <span class="col">severity</span> <span class="op">=</span> <span class="str">'Serious'</span>
+)
+<span class="kw">SELECT</span>
+    <span class="col">status</span>,
+    <span class="fn">COUNT</span>(<span class="op">*</span>)                        <span class="kw">AS</span> <span class="col">case_count</span>,
+    <span class="fn">ROUND</span>(<span class="fn">AVG</span>(<span class="col">days_to_submit</span>), <span class="num">1</span>)  <span class="kw">AS</span> <span class="col">avg_days</span>,
+    <span class="fn">MAX</span>(<span class="col">days_to_submit</span>)             <span class="kw">AS</span> <span class="col">worst_case_days</span>
+<span class="kw">FROM</span> <span class="tbl">compliance_check</span>
+<span class="kw">GROUP BY</span> <span class="col">status</span>
+<span class="kw">ORDER BY</span> <span class="col">case_count</span> <span class="kw">DESC</span>;
+</pre></div>
+      </div></div>
+    </div>
+
+  </section>
+
+  <div style="text-align:center; padding:48px 0 20px; font-family:'Space Mono',monospace; font-size:10px; color:#333; letter-spacing:0.15em;">
+    SQL END-TO-END GUIDE // ALL CLAUSES, FUNCTIONS & PATTERNS<br>
+    <a href="pharmacovigilance-interview-prep.html" style="color:#00ff8844; text-decoration:none;">← Back to PV Interview Prep</a>
+  </div>
+
+</div>
+
+<script>
+  // Progress
+  window.addEventListener('scroll', () => {
+    const p = document.documentElement.scrollTop / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+    document.getElementById('progress').style.width = p + '%';
+  });
+
+  // Accordion
+  document.querySelectorAll('.qa-q').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.parentElement;
+      const open = item.classList.contains('open');
+      document.querySelectorAll('.qa.open').forEach(i => i.classList.remove('open'));
+      if (!open) item.classList.add('open');
+    });
+  });
+
+  // Search
+  const si = document.getElementById('searchInput');
+  const sections = document.querySelectorAll('.section');
+  si.addEventListener('input', () => {
+    const q = si.value.trim().toLowerCase();
+    if (!q) { sections.forEach(s => s.classList.remove('hidden')); return; }
+    sections.forEach(s => {
+      s.classList.toggle('hidden', !s.textContent.toLowerCase().includes(q));
+    });
+  });
+
+  // TOC
+  document.querySelectorAll('.toc a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const t = document.querySelector(a.getAttribute('href'));
+      if (t) { t.classList.remove('hidden'); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+
+  // Copy button
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 2000);
+    });
+  }
+</script>
+</body>
+</html>
