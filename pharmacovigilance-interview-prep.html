@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pharmacovigilance Interview Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --accent4: #f59e0b;
+    --text: #e2e8f0;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
+    --danger: #ef4444;
+    --glow: rgba(0,212,255,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #00d4ff22, #7c3aed22);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 5vw, 58px);
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+
+  h1 em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 13px;
+    max-width: 600px;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 24px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+
+  .stat-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+
+  /* Navigation */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px;
+  }
+
+  .toc-title {
+    grid-column: 1 / -1;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .toc-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+
+  .toc-link:hover {
+    background: var(--glow);
+    border-color: var(--border);
+    color: var(--text);
+  }
+
+  .toc-num {
+    font-size: 10px;
+    color: var(--accent);
+    font-weight: 500;
+    min-width: 20px;
+  }
+
+  /* Sections */
+  .section {
+    margin-bottom: 48px;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .section-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    min-width: 28px;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: #fff;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--accent); }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card.green { --accent: #10b981; }
+  .card.amber { --accent: #f59e0b; }
+  .card.purple { --accent: #7c3aed; }
+  .card.red { --accent: #ef4444; }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-body {
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .card-body strong { color: var(--text); }
+
+  /* Q&A Accordion */
+  .qa-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .qa-question {
+    padding: 16px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    transition: background 0.2s;
+    user-select: none;
+  }
+
+  .qa-question:hover { background: var(--surface2); }
+
+  .qa-icon {
+    color: var(--accent);
+    font-size: 18px;
+    font-weight: 300;
+    flex-shrink: 0;
+    transition: transform 0.3s;
+  }
+
+  .qa-item.open .qa-icon { transform: rotate(45deg); }
+
+  .qa-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .qa-item.open .qa-answer { max-height: 2000px; }
+
+  .qa-answer-inner {
+    padding: 0 20px 20px;
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.85;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  .qa-answer-inner strong { color: var(--accent3); }
+  .qa-answer-inner em { color: var(--accent4); font-style: normal; font-weight: 500; }
+
+  /* Table */
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  thead tr {
+    background: linear-gradient(90deg, var(--surface2), var(--surface));
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    padding: 12px 16px;
+    text-align: left;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); color: var(--text); }
+
+  td strong { color: var(--text); }
+
+  /* Highlights */
+  .highlight-box {
+    background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(124,58,237,0.05));
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  .highlight-box .hl-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 28px;
+    margin-bottom: 16px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px; top: 8px; bottom: 8px;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2));
+  }
+
+  .tl-item {
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -24px; top: 6px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  .tl-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .tl-text {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* Tag pills */
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+
+  .tag {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+
+  .tag.blue { color: var(--accent); border-color: rgba(0,212,255,0.3); background: rgba(0,212,255,0.05); }
+  .tag.green { color: var(--accent3); border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.05); }
+  .tag.amber { color: var(--accent4); border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.05); }
+  .tag.purple { color: #a78bfa; border-color: rgba(167,139,250,0.3); background: rgba(167,139,250,0.05); }
+
+  /* Grid layout for cards */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  /* Comparison side */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  @media (max-width: 640px) { .compare { grid-template-columns: 1fr; } }
+
+  .compare-box {
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .compare-box.left { border-top: 3px solid var(--accent2); }
+  .compare-box.right { border-top: 3px solid var(--accent3); }
+
+  .compare-head {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .compare-box.left .compare-head { color: #a78bfa; }
+  .compare-box.right .compare-head { color: var(--accent3); }
+
+  ul.clean { list-style: none; }
+
+  ul.clean li {
+    padding: 5px 0;
+    color: var(--text-dim);
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+  }
+
+  ul.clean li:last-child { border-bottom: none; }
+  ul.clean li::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+
+  /* Scroll to top */
+  .back-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--accent);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-bottom: 20px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+
+  .back-top:hover { opacity: 1; }
+
+  /* Progress */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    z-index: 100;
+    transition: width 0.1s;
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* Search */
+  .search-wrap {
+    position: sticky;
+    top: 12px;
+    z-index: 50;
+    margin-bottom: 32px;
+  }
+
+  .search-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px 12px 42px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    backdrop-filter: blur(12px);
+  }
+
+  .search-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--glow);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+
+  .search-clear {
+    position: absolute;
+    right: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 18px;
+    display: none;
+  }
+
+  .search-clear.visible { display: block; }
+
+  .highlight-match {
+    background: rgba(0,212,255,0.2);
+    color: var(--accent);
+    border-radius: 2px;
+    padding: 0 2px;
+  }
+
+  .section.hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<div class="container">
+
+  <header>
+    <div class="badge">Interview Preparation Guide</div>
+    <h1>Pharmaco<em>vigilance</em><br>Interview Mastery</h1>
+    <p class="subtitle">Comprehensive reference covering PV fundamentals, E2B R2/R3, ICSR, GAMP 5, regulatory frameworks and real-world interview Q&A.</p>
+    <div class="stats-row">
+      <div class="stat"><span class="stat-dot" style="background:#00d4ff"></span> IQVIA / CRO Ready</div>
+      <div class="stat"><span class="stat-dot" style="background:#10b981"></span> ICH E2B / EudraVigilance</div>
+      <div class="stat"><span class="stat-dot" style="background:#f59e0b"></span> GAMP 5 / FDA 21 CFR Part 11</div>
+      <div class="stat"><span class="stat-dot" style="background:#7c3aed"></span> ICSR / Aggregate Reports</div>
+    </div>
+  </header>
+
+  <!-- Search -->
+  <div class="search-wrap" style="position:relative">
+    <span class="search-icon">⌕</span>
+    <input class="search-input" id="searchInput" placeholder="Search topics, terms, regulations..." autocomplete="off">
+    <span class="search-clear" id="searchClear">×</span>
+  </div>
+
+  <!-- TOC -->
+  <nav class="toc">
+    <div class="toc-title">Table of Contents</div>
+    <a class="toc-link" href="#sec1"><span class="toc-num">01</span>What is Pharmacovigilance?</a>
+    <a class="toc-link" href="#sec2"><span class="toc-num">02</span>Regulatory Framework</a>
+    <a class="toc-link" href="#sec3"><span class="toc-num">03</span>E2B R2 vs R3 Deep Dive</a>
+    <a class="toc-link" href="#sec4"><span class="toc-num">04</span>ICSR Reports</a>
+    <a class="toc-link" href="#sec5"><span class="toc-num">05</span>Aggregate Reports</a>
+    <a class="toc-link" href="#sec6"><span class="toc-num">06</span>GAMP 5</a>
+    <a class="toc-link" href="#sec7"><span class="toc-num">07</span>Signal Detection</a>
+    <a class="toc-link" href="#sec8"><span class="toc-num">08</span>Key Terminologies</a>
+    <a class="toc-link" href="#sec9"><span class="toc-num">09</span>Interview Q&A</a>
+    <a class="toc-link" href="#sec10"><span class="toc-num">10</span>IQVIA Context</a>
+    <a class="toc-link" href="#sec11"><span class="toc-num">11</span>MedDRA Versions & WHO-DD</a>
+    <a class="toc-link" href="#sec12"><span class="toc-num">12</span>Blinded vs Unblinded Reports</a>
+  </nav>
+
+  <!-- SECTION 1 -->
+  <section class="section" id="sec1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">What is Pharmacovigilance?</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="highlight-box">
+      <div class="hl-title">WHO Definition</div>
+      <p style="color:var(--text-dim); font-size:13px;">Pharmacovigilance (PV) is the science and activities relating to the <strong style="color:var(--text)">detection, assessment, understanding and prevention</strong> of adverse effects or any other drug-related problem.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">⚕ Why PV Exists</div>
+        <div class="card-body">
+          Clinical trials involve limited patient populations under controlled conditions. Post-market surveillance captures <strong>real-world safety data</strong> across millions of patients — different ages, comorbidities, co-medications, and genetic backgrounds — that trials cannot cover.
+        </div>
+        <div class="tags">
+          <span class="tag blue">Post-Market</span>
+          <span class="tag green">Patient Safety</span>
+          <span class="tag amber">Risk Minimization</span>
+        </div>
+      </div>
+
+      <div class="card green">
+        <div class="card-title">🎯 Core Objectives</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li>Detect new ADRs not found in trials</li>
+            <li>Monitor known risks in real-world use</li>
+            <li>Identify drug-drug interactions</li>
+            <li>Assess benefit-risk balance continuously</li>
+            <li>Communicate risk to healthcare professionals</li>
+            <li>Support regulatory decisions (label changes)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card amber">
+      <div class="card-title">📋 PV Lifecycle Overview</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-label">Adverse Event (AE) Intake</div>
+          <div class="tl-text">Events received from patients, HCPs, literature, clinical trials, regulatory authorities, partner companies.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-label">Case Processing (ICSR)</div>
+          <div class="tl-text">Triage → Data Entry → Medical Review → Narrative Writing → Causality Assessment</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-label">Regulatory Reporting</div>
+          <div class="tl-text">Expedited reports (7-day / 15-day) to FDA, EMA, PMDA etc. via E2B XML / MedWatch / CIOMS</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-label">Signal Detection</div>
+          <div class="tl-text">Statistical methods (PRR, ROR, BCPNN) on aggregate data to find new safety signals</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-label">Aggregate Reporting</div>
+          <div class="tl-text">PSUR / PBRER / DSUR — periodic summaries of cumulative safety data submitted to regulators</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-label">Risk Management</div>
+          <div class="tl-text">RMP (EU) / REMS (US) — educational materials, restricted distribution, monitoring programs</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section class="section" id="sec2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Regulatory Framework</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Region</th>
+            <th>Authority</th>
+            <th>Key Regulation</th>
+            <th>Database / System</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>USA</strong></td><td>FDA</td><td>21 CFR Part 312, 314, 600 / FAERS</td><td>MedWatch, FAERS, FDA Adverse Event Reporting</td></tr>
+          <tr><td><strong>EU</strong></td><td>EMA</td><td>EC Regulation 726/2004; DIR 2010/84/EU</td><td>EudraVigilance (EVDAS)</td></tr>
+          <tr><td><strong>Global</strong></td><td>ICH</td><td>E2A, E2B, E2C, E2D, E2E, E2F</td><td>VigiBase (WHO-UMC)</td></tr>
+          <tr><td><strong>Japan</strong></td><td>PMDA</td><td>ICH E2B(R3) since 2019</td><td>EPPIC-Net / PMDA system</td></tr>
+          <tr><td><strong>India</strong></td><td>CDSCO</td><td>Schedule Y / PvPI guidelines</td><td>VigiFlow</td></tr>
+          <tr><td><strong>UK</strong></td><td>MHRA</td><td>Human Medicines Regs 2012</td><td>Yellow Card Scheme</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <div class="card purple">
+        <div class="card-title">📅 ICH E2 Guidelines Family</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li><strong>E2A</strong> — Definitions & standards for expedited reporting</li>
+            <li><strong>E2B(R3)</strong> — Data elements for ICSR transmission</li>
+            <li><strong>E2C(R2)</strong> — PSUR / PBRER structure</li>
+            <li><strong>E2D</strong> — Post-approval expedited reporting</li>
+            <li><strong>E2E</strong> — Pharmacovigilance planning</li>
+            <li><strong>E2F</strong> — DSUR (Development Safety Update Report)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⏱ Reporting Timelines</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li><strong>7 calendar days</strong> — Fatal/life-threatening unexpected SADRs (initial)</li>
+            <li><strong>15 calendar days</strong> — All other serious unexpected ADRs</li>
+            <li><strong>Follow-up</strong> — 15 days from new information receipt</li>
+            <li><strong>Non-serious</strong> — Periodic/quarterly submissions</li>
+            <li><strong>PSUR/PBRER</strong> — 6-monthly or annual per product</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3 -->
+  <section class="section" id="sec3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">E2B R2 vs R3 Deep Dive</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="highlight-box">
+      <div class="hl-title">What is E2B?</div>
+      <p style="color:var(--text-dim); font-size:13px;">ICH E2B is the international standard for electronic transmission of Individual Case Safety Reports (ICSRs). It defines the data elements, structure, and format for submitting adverse event reports to regulatory authorities electronically.</p>
+    </div>
+
+    <div class="compare">
+      <div class="compare-box left">
+        <div class="compare-head">E2B(R2) — Legacy</div>
+        <ul class="clean">
+          <li>Format: <strong>SGM (SGML-based)</strong></li>
+          <li>Structure: Flat, non-hierarchical</li>
+          <li>Used by: FAERS (FDA), older EV submissions</li>
+          <li>MedDRA: Single reaction term</li>
+          <li>Identifier: Local Report Number</li>
+          <li>Drug info: Simple fields only</li>
+          <li>Global ID: Not standardized</li>
+          <li>Status: Being phased out</li>
+        </ul>
+      </div>
+      <div class="compare-box right">
+        <div class="compare-head">E2B(R3) — Current Standard</div>
+        <ul class="clean">
+          <li>Format: <strong>XML (HL7 v3 based)</strong></li>
+          <li>Structure: Hierarchical, rich data model</li>
+          <li>Used by: EudraVigilance (EU), PMDA, MHRA</li>
+          <li>MedDRA: Multiple reactions per event</li>
+          <li>Identifier: Universally Unique ID (UUID)</li>
+          <li>Drug info: Role codes, indication MedDRA</li>
+          <li>Global ID: Sender/receiver safety report ID</li>
+          <li>Status: Mandatory — EU since Nov 2017</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📦 E2B(R3) Key Data Elements (Sections)</div>
+      <div class="card-body">
+        <div class="table-wrap" style="margin-top:12px; margin-bottom:0">
+          <table>
+            <thead><tr><th>Section</th><th>Content</th><th>Key Fields</th></tr></thead>
+            <tbody>
+              <tr><td><strong>C.1</strong></td><td>Safety Report Identification</td><td>Report ID, type, date of creation, sender/receiver</td></tr>
+              <tr><td><strong>C.2</strong></td><td>Primary Source</td><td>Reporter name, address, qualification (HCP/Consumer/MAH)</td></tr>
+              <tr><td><strong>C.3</strong></td><td>Sender & Receiver</td><td>Organization ID, country, type</td></tr>
+              <tr><td><strong>C.4</strong></td><td>Literature Reference</td><td>Publication details, authors, journal</td></tr>
+              <tr><td><strong>C.5</strong></td><td>Study Information</td><td>Study number, name, type (clinical trial etc.)</td></tr>
+              <tr><td><strong>D</strong></td><td>Patient Characteristics</td><td>Age, sex, weight, height, relevant medical history</td></tr>
+              <tr><td><strong>E</strong></td><td>Reaction/Event</td><td>MedDRA PT/LLT, onset date, outcome, seriousness</td></tr>
+              <tr><td><strong>F</strong></td><td>Results of Tests</td><td>Lab values, dates, normal ranges</td></tr>
+              <tr><td><strong>G</strong></td><td>Drug Information</td><td>Drug name, dose, route, dates, indication, role code</td></tr>
+              <tr><td><strong>H</strong></td><td>Narrative / Summary</td><td>Case narrative, reporter's comments, MAH assessment</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card green">
+        <div class="card-title">🔄 Migration Challenges R2→R3</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li>XML schema validation rules are stricter</li>
+            <li>New mandatory fields (UUID, nullFlavor handling)</li>
+            <li>Drug role codes changed (Suspect/Concomitant/Interacting)</li>
+            <li>NullFlavor (UNK, ASKU, NASK) must be used correctly</li>
+            <li>Duplicate detection via worldwide unique case ID</li>
+            <li>Acknowledgement (ACK) mechanism is mandatory</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card amber">
+        <div class="card-title">🏛 Gateways & Submission</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li><strong>EV Gateway</strong> — EMA's system for E2B(R3) XML</li>
+            <li><strong>ESM</strong> — EMA's Electronic Submission Manager</li>
+            <li><strong>EVWEB</strong> — Manual web portal for EV reports</li>
+            <li><strong>FDA FAERS</strong> — Still primarily E2B(R2) via MedWatch Plus</li>
+            <li><strong>VigiFlow</strong> — WHO system using E2B messaging</li>
+            <li><strong>Safety DB / ARISg</strong> — Common safety databases</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4 -->
+  <section class="section" id="sec4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">ICSR Reports</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="highlight-box">
+      <div class="hl-title">Individual Case Safety Report (ICSR)</div>
+      <p style="color:var(--text-dim); font-size:13px;">An ICSR is a report describing one or more suspected adverse reactions in a single patient at a specific point in time. It is the fundamental unit of pharmacovigilance data collection and reporting worldwide.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚡ The 4 Minimum Criteria for a Valid ICSR</div>
+      <div class="card-body">
+        <div class="grid-2" style="margin-top:12px">
+          <div style="background:var(--surface2); border-radius:6px; padding:16px; border-left: 3px solid var(--accent)">
+            <div style="font-family:'Syne',sans-serif; font-weight:700; color:var(--accent); margin-bottom:6px;">1. Identifiable Reporter</div>
+            <div style="color:var(--text-dim); font-size:12px;">Name, address, or qualification of the person reporting the event (cannot be anonymous)</div>
+          </div>
+          <div style="background:var(--surface2); border-radius:6px; padding:16px; border-left: 3px solid var(--accent3)">
+            <div style="font-family:'Syne',sans-serif; font-weight:700; color:var(--accent3); margin-bottom:6px;">2. Identifiable Patient</div>
+            <div style="color:var(--text-dim); font-size:12px;">Age, sex, initials, or any patient identifier — full name not required</div>
+          </div>
+          <div style="background:var(--surface2); border-radius:6px; padding:16px; border-left: 3px solid var(--accent4)">
+            <div style="font-family:'Syne',sans-serif; font-weight:700; color:var(--accent4); margin-bottom:6px;">3. Suspect Drug</div>
+            <div style="color:var(--text-dim); font-size:12px;">At least one suspect medicinal product must be identified</div>
+          </div>
+          <div style="background:var(--surface2); border-radius:6px; padding:16px; border-left: 3px solid #a78bfa">
+            <div style="font-family:'Syne',sans-serif; font-weight:700; color:#a78bfa; margin-bottom:6px;">4. Adverse Event</div>
+            <div style="color:var(--text-dim); font-size:12px;">At least one adverse event or reaction must be described</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card green">
+        <div class="card-title">📥 Sources of ICSRs</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li><strong>Spontaneous</strong> — Voluntary reports from HCPs/patients</li>
+            <li><strong>Clinical Trials</strong> — SAEs from ongoing studies</li>
+            <li><strong>Literature</strong> — Published case reports / articles</li>
+            <li><strong>Regulatory Authority</strong> — Reports forwarded by HA</li>
+            <li><strong>Partners / Licensees</strong> — Business partner exchange</li>
+            <li><strong>Digital / Social Media</strong> — Emerging source (AI-monitored)</li>
+            <li><strong>Patient Support Programs</strong> — Disease registries</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card purple">
+        <div class="card-title">🔬 Seriousness Criteria (ICH E2A)</div>
+        <div class="card-body">
+          <p style="margin-bottom:10px; font-size:12px;">An AE is <strong>serious</strong> if it results in any of the following:</p>
+          <ul class="clean" style="margin-top:0">
+            <li>Death</li>
+            <li>Life-threatening condition</li>
+            <li>Hospitalization (initial or prolonged)</li>
+            <li>Persistent or significant disability/incapacity</li>
+            <li>Congenital anomaly / birth defect</li>
+            <li>Medically important event (may not be fatal but jeopardizes the patient)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 ICSR Processing Workflow</div>
+      <div class="card-body">
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-label">Day 0 — Receipt / Triage</div>
+            <div class="tl-text">Determine validity (4 minimum criteria). Classify: serious vs non-serious, expected vs unexpected. Assign case ID. Start clock for regulatory timelines.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">Data Entry</div>
+            <div class="tl-text">Enter all available data into safety database (ARISg, Veeva Vault Safety, Oracle Argus, etc.). MedDRA code assignment for reactions and indications.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">Medical Review / Causality Assessment</div>
+            <div class="tl-text">Physician reviews: Is there a reasonable causal relationship between drug and event? Assessment: Related / Not Related / Unclassifiable. Methods: WHO-UMC, Naranjo, Bradford-Hill.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">Narrative Writing</div>
+            <div class="tl-text">Clinical summary of the case in plain language: patient history → drug exposure → event onset → outcome → causality. Must be concise yet complete.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">Quality Review & Submission</div>
+            <div class="tl-text">QC check → Generate E2B(R3) XML → Submit to regulatory authority within deadline. Receive and process ACK.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">Follow-Up</div>
+            <div class="tl-text">Actively seek additional information. Restart 15-day clock for significant new information. Document follow-up attempts.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5 -->
+  <section class="section" id="sec5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Aggregate Reports</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Report</th><th>Full Name</th><th>Who Submits</th><th>Frequency</th><th>Guideline</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>PSUR / PBRER</strong></td><td>Periodic Safety Update Report / Periodic Benefit-Risk Evaluation Report</td><td>MAH (post-approval)</td><td>6-monthly, annually, or per EURD list</td><td>ICH E2C(R2)</td></tr>
+          <tr><td><strong>DSUR</strong></td><td>Development Safety Update Report</td><td>Sponsor (pre-approval / clinical trials)</td><td>Annual</td><td>ICH E2F</td></tr>
+          <tr><td><strong>SUSAR</strong></td><td>Suspected Unexpected Serious Adverse Reaction</td><td>Sponsor / Investigator</td><td>Expedited (7/15 days)</td><td>ICH E2A / GCP</td></tr>
+          <tr><td><strong>ASR</strong></td><td>Annual Safety Report</td><td>MAH (US-specific)</td><td>Annual</td><td>FDA 21 CFR 312.33</td></tr>
+          <tr><td><strong>RMP</strong></td><td>Risk Management Plan</td><td>MAH (EU)</td><td>Updated with MAA/variation</td><td>GVP Module V</td></tr>
+          <tr><td><strong>REMS</strong></td><td>Risk Evaluation and Mitigation Strategy</td><td>MAH (US)</td><td>Per FDA requirement</td><td>FDAAA 2007</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">📖 PSUR / PBRER Structure (ICH E2C R2)</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li>Executive Summary</li>
+            <li>Introduction (product, indication, status)</li>
+            <li>Worldwide Market Authorization Status</li>
+            <li>Actions Taken for Safety Reasons</li>
+            <li>Changes to Reference Safety Information</li>
+            <li>Estimated Exposure & Use Patterns</li>
+            <li>Presentation of Individual Case Histories</li>
+            <li>Cumulative Summary Tabulations</li>
+            <li>Analyses of Individual Case Histories</li>
+            <li>Studies (ongoing/completed)</li>
+            <li>Other Information (literature, risk-benefit)</li>
+            <li>Overall Safety Evaluation</li>
+            <li>Conclusions</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card green">
+        <div class="card-title">🔬 DSUR Structure (ICH E2F)</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li>Executive Summary</li>
+            <li>Introduction</li>
+            <li>Worldwide Clinical Trial Status</li>
+            <li>Actions Taken for Safety Reasons</li>
+            <li>Changes to Reference Safety Information</li>
+            <li>IB and Patient Information</li>
+            <li>Non-clinical safety studies</li>
+            <li>Clinical trials & safety data (IB period)</li>
+            <li>Safety from marketing experience</li>
+            <li>Literature reports</li>
+            <li>Other DSURs</li>
+            <li>Overall Safety Assessment</li>
+            <li>Conclusion</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6 -->
+  <section class="section" id="sec6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">GAMP 5</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="highlight-box">
+      <div class="hl-title">Good Automated Manufacturing Practice — 2nd Edition</div>
+      <p style="color:var(--text-dim); font-size:13px;">GAMP 5 (published by ISPE) provides a practical framework for the <strong style="color:var(--text)">validation of computerized systems</strong> used in regulated life sciences environments. In PV, it governs how safety databases (e.g., Oracle Argus, Veeva Vault Safety, ARISg) must be validated.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🗂 GAMP 5 Software Categories</div>
+      <div class="table-wrap" style="margin-top:12px; margin-bottom:0">
+        <table>
+          <thead><tr><th>Category</th><th>Type</th><th>Example in PV</th><th>Validation Level</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Cat 1</strong></td><td>Infrastructure Software</td><td>OS, middleware, SQL Server</td><td>Vendor qualification only</td></tr>
+            <tr><td><strong>Cat 3</strong></td><td>Non-configured products</td><td>Standard office software, basic COTS</td><td>Testing of standard functions</td></tr>
+            <tr><td><strong>Cat 4</strong></td><td>Configured products</td><td>Oracle Argus, Safety Reporter, ARISg</td><td>Configuration testing, IQ/OQ/PQ</td></tr>
+            <tr><td><strong>Cat 5</strong></td><td>Custom / Bespoke software</td><td>In-house built PV tools, custom reports</td><td>Full lifecycle validation (IQ/OQ/PQ + code review)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card amber">
+        <div class="card-title">📋 Validation Life Cycle (V-Model)</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li><strong>URS</strong> — User Requirements Specification</li>
+            <li><strong>FS</strong> — Functional Specification</li>
+            <li><strong>DS</strong> — Design Specification</li>
+            <li><strong>IQ</strong> — Installation Qualification (installed correctly?)</li>
+            <li><strong>OQ</strong> — Operational Qualification (works as designed?)</li>
+            <li><strong>PQ</strong> — Performance Qualification (meets user needs?)</li>
+            <li><strong>Periodic Review</strong> — Annual or change-triggered revalidation</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card purple">
+        <div class="card-title">📜 21 CFR Part 11 (FDA)</div>
+        <div class="card-body">
+          <p style="font-size:12px; margin-bottom:10px;">Governs electronic records and electronic signatures in FDA-regulated systems. Key requirements:</p>
+          <ul class="clean" style="margin-top:0">
+            <li>Audit trails — who changed what, when</li>
+            <li>Electronic signatures = legally binding</li>
+            <li>Access controls & user authentication</li>
+            <li>System validation documented</li>
+            <li>Record retention & backup</li>
+            <li>Computer-generated date/time stamps</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-title">🔗 GAMP 5 in PV Context — Why It Matters for Interviews</div>
+      <div class="card-body">
+        When you work on a PV system (like Argus or ARISg), you must ensure:
+        <ul class="clean" style="margin-top:10px">
+          <li>Any configuration change goes through <strong>Change Control</strong></li>
+          <li>All changes are documented in a <strong>Change Request</strong> with risk assessment</li>
+          <li>Testing follows <strong>test scripts</strong> (IQ/OQ/PQ protocols)</li>
+          <li>All defects / deviations are documented</li>
+          <li><strong>UAT (User Acceptance Testing)</strong> is sign-off by business users</li>
+          <li>Regression testing ensures existing functionality not broken</li>
+          <li>System goes live only after validation sign-off</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 7 -->
+  <section class="section" id="sec7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Signal Detection</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">📡 What is a Signal?</div>
+        <div class="card-body">
+          <p>Information that arises from one or multiple sources (including observations and experiments) which suggests a <strong>new potentially causal association</strong>, or a new aspect of a known association, between an intervention and an event or set of related events, either adverse or beneficial.</p>
+          <p style="margin-top:10px; color:var(--text-muted); font-size:12px;">(ICH E2C R2 / GVP Module IX definition)</p>
+        </div>
+      </div>
+
+      <div class="card red">
+        <div class="card-title">📐 Quantitative Signal Detection Methods</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li><strong>PRR</strong> — Proportional Reporting Ratio (EU approach)</li>
+            <li><strong>ROR</strong> — Reporting Odds Ratio</li>
+            <li><strong>EBGM</strong> — Empirical Bayes Geometric Mean (FDA)</li>
+            <li><strong>IC</strong> — Information Component / BCPNN (WHO-UMC)</li>
+            <li><strong>MGPS</strong> — Multi-item Gamma Poisson Shrinker</li>
+          </ul>
+          <div class="tags" style="margin-top:10px">
+            <span class="tag amber">PRR ≥2 + χ²≥4 = Signal</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-title">🔁 Signal Management Process (GVP Module IX)</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-label">Signal Detection</div>
+          <div class="tl-text">Automated or manual review of databases (EudraVigilance, FAERS, VigiBase, company database, literature)</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-label">Signal Validation</div>
+          <div class="tl-text">Determine if signal is new or known. Check SmPC/IB. Assess if causality is plausible. Decide if further evaluation needed.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-label">Signal Prioritization</div>
+          <div class="tl-text">Rank by seriousness, severity, reversibility, preventability, public health impact</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-label">Signal Assessment</div>
+          <div class="tl-text">In-depth evaluation with all available data. Epidemiological analysis. Benefit-risk assessment.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-label">Recommendation & Action</div>
+          <div class="tl-text">Label update / DHPC / regulatory notification / RMP update / product withdrawal if needed</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 8 -->
+  <section class="section" id="sec8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">Key Terminologies</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Term</th><th>Full Form</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td><strong>ADR</strong></td><td>Adverse Drug Reaction</td><td>A response to a medicine which is noxious and unintended and occurs at doses normally used. Causality implied.</td></tr>
+          <tr><td><strong>AE</strong></td><td>Adverse Event</td><td>Any untoward medical occurrence in a patient. Does NOT imply causality with the drug.</td></tr>
+          <tr><td><strong>SAE</strong></td><td>Serious Adverse Event</td><td>Any AE meeting one of the 6 seriousness criteria (death, LT, hosp, disability, congenital, medically significant)</td></tr>
+          <tr><td><strong>SADR</strong></td><td>Serious Adverse Drug Reaction</td><td>Serious + causally related to the drug</td></tr>
+          <tr><td><strong>SUSAR</strong></td><td>Suspected Unexpected Serious Adverse Reaction</td><td>Serious + unexpected (not in IB/SmPC) + causal relationship cannot be ruled out</td></tr>
+          <tr><td><strong>MedDRA</strong></td><td>Medical Dictionary for Regulatory Activities</td><td>Standardized medical terminology used globally for AE coding. Hierarchy: SOC → HLGT → HLT → PT → LLT</td></tr>
+          <tr><td><strong>SmPC</strong></td><td>Summary of Product Characteristics</td><td>EU label / prescribing information for a medicinal product</td></tr>
+          <tr><td><strong>IB</strong></td><td>Investigator's Brochure</td><td>Pre-marketing reference document for clinical trials (defines expectedness)</td></tr>
+          <tr><td><strong>MAH</strong></td><td>Marketing Authorization Holder</td><td>Company that holds the license to market a drug</td></tr>
+          <tr><td><strong>QPPV</strong></td><td>Qualified Person for PV</td><td>EU-mandated individual responsible for PV system at MAH</td></tr>
+          <tr><td><strong>PSMF</strong></td><td>Pharmacovigilance System Master File</td><td>EU required document describing the MAH's PV system</td></tr>
+          <tr><td><strong>GVP</strong></td><td>Good Vigilance Practice</td><td>EMA's guidelines (Modules I–XVI) governing PV operations in EU</td></tr>
+          <tr><td><strong>CIOMS</strong></td><td>Council for Intl Organizations of Medical Sciences</td><td>Provides CIOMS I form — alternative to MedWatch for expedited reporting</td></tr>
+          <tr><td><strong>DLP</strong></td><td>Data Lock Point</td><td>The date after which no new data is included in an aggregate report period</td></tr>
+          <tr><td><strong>IBD</strong></td><td>International Birth Date</td><td>Date of first marketing authorization for a drug anywhere in the world. Anchors PSUR cycle.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SECTION 9 -->
+  <section class="section" id="sec9">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2 class="section-title">Interview Q&A</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <p style="color:var(--text-muted); font-size:12px; margin-bottom:20px;">Click any question to reveal the answer.</p>
+
+    <!-- Fundamentals -->
+    <div class="card-title" style="margin-bottom:12px; font-family:'Syne',sans-serif; font-size:11px; color:var(--accent); letter-spacing:0.1em;">FUNDAMENTALS</div>
+
+    <div class="qa-item">
+      <div class="qa-question">What is the difference between an Adverse Event and an Adverse Drug Reaction?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        An <strong>Adverse Event (AE)</strong> is any untoward medical occurrence in a patient administered a pharmaceutical product — it does NOT necessarily have a causal relationship with the treatment. For example, a patient breaks their leg while on a drug; that's an AE.<br><br>
+        An <strong>Adverse Drug Reaction (ADR)</strong> implies a <em>causal relationship</em> — the reaction is attributed to the drug. Post-marketing ADRs follow the WHO definition: noxious, unintended, occurring at normal doses.<br><br>
+        <strong>Key interview tip:</strong> In clinical trials, all untoward events are AEs. Post-marketing, spontaneous reports are classified as ADRs (causality implied by the reporter).
+      </div></div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">What are the 4 minimum criteria for a valid ICSR?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        <strong>1. Identifiable Reporter</strong> — A real person must report it (HCP, patient, caregiver — cannot be anonymous).<br>
+        <strong>2. Identifiable Patient</strong> — Age, initials, sex or any identifier (full name not needed for privacy).<br>
+        <strong>3. Suspect Medicinal Product</strong> — At least one drug suspected of causing the event.<br>
+        <strong>4. Adverse Event</strong> — At least one adverse event or reaction described.<br><br>
+        If any of these 4 are missing, the report is <em>invalid</em> and should not be processed as a case — it becomes a <strong>non-case</strong> (document why).
+      </div></div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">What is "expectedness" and how is it determined?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        <strong>Expectedness</strong> refers to whether the nature, severity, specificity, and outcome of an adverse reaction is consistent with the reference safety document:<br><br>
+        <em>Pre-market (clinical trials):</em> Reference = Investigator's Brochure (IB)<br>
+        <em>Post-market:</em> Reference = SmPC / Company Core Data Sheet (CCDS)<br><br>
+        An event is <strong>Unexpected</strong> if it is not listed in the reference document, or if listed, differs in nature, severity, or specificity.<br><br>
+        <strong>Why it matters:</strong> Unexpected + Serious + Causal = SUSAR → Expedited 7/15 day reporting obligation is triggered.
+      </div></div>
+    </div>
+
+    <!-- E2B -->
+    <div class="card-title" style="margin-bottom:12px; margin-top:24px; font-family:'Syne',sans-serif; font-size:11px; color:#a78bfa; letter-spacing:0.1em;">E2B & REPORTING</div>
+
+    <div class="qa-item">
+      <div class="qa-question">What are the main differences between E2B R2 and R3?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        <strong>Format:</strong> R2 uses SGML (older flat format); R3 uses XML based on HL7 v3 standard — more structured and machine-readable.<br><br>
+        <strong>Structure:</strong> R3 is hierarchical with sections C.1 to H; R2 had flat fields in a single block.<br><br>
+        <strong>Identifiers:</strong> R3 mandates globally unique case identifiers (UUIDs) to prevent duplicate processing across authorities.<br><br>
+        <strong>MedDRA:</strong> R3 allows multiple reaction terms per event; R2 had limited coding capacity.<br><br>
+        <strong>Drug roles:</strong> R3 uses standardized role codes (Suspect, Concomitant, Interacting, Drug Not Administered).<br><br>
+        <strong>NullFlavor:</strong> R3 uses HL7 NullFlavor codes (UNK, ASKU, NASK, NA) for missing data instead of leaving fields blank.<br><br>
+        <strong>Acknowledgement:</strong> R3 has a mandatory ACK mechanism confirming receipt and validation status.<br><br>
+        <em>EMA mandated E2B(R3) for EudraVigilance submissions from November 22, 2017.</em>
+      </div></div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">What is the EudraVigilance Gateway and how does submission work?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        <strong>EudraVigilance (EV)</strong> is EMA's European database for managing and analyzing information on suspected adverse reactions to medicines authorized in the European Economic Area.<br><br>
+        <strong>EV Gateway</strong> is the electronic system through which MAHs and sponsors submit E2B(R3) XML ICSRs directly to EMA. Submissions must pass XML schema validation and business rule validation before acceptance.<br><br>
+        <strong>EVWEB</strong> is the web-based manual interface for smaller organizations or individual report submission.<br><br>
+        <strong>ESM (Electronic Submission Manager)</strong> is the EMA portal used to manage submission accounts and access.<br><br>
+        After submission, EMA sends an <em>acknowledgement (ACK)</em> message indicating: Accepted / Accepted with warnings / Rejected (with error codes).
+      </div></div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">What is the 15-day clock rule and when does it start?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        The <strong>15-calendar-day clock</strong> starts from the date the MAH (or any employee/partner) first receives information that constitutes a valid ICSR — this is called <em>Day 0</em>.<br><br>
+        <strong>For 7-day reports</strong> (fatal/life-threatening unexpected): Clock starts from Day 0, initial report must be submitted in 7 days, with follow-up within 8 more days.<br><br>
+        <strong>Key nuance:</strong> If a follow-up contains <em>significant new information</em> that changes the seriousness, expectedness, or causality assessment — a <strong>new 15-day clock starts</strong> from the date that new info was received.<br><br>
+        <em>Missing the deadline = regulatory non-compliance = warning letters and potential fines.</em>
+      </div></div>
+    </div>
+
+    <!-- GAMP 5 -->
+    <div class="card-title" style="margin-bottom:12px; margin-top:24px; font-family:'Syne',sans-serif; font-size:11px; color:var(--accent4); letter-spacing:0.1em;">GAMP 5 & VALIDATION</div>
+
+    <div class="qa-item">
+      <div class="qa-question">What is GAMP 5 and why is it important in pharmacovigilance?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        <strong>GAMP 5</strong> (Good Automated Manufacturing Practice, 2nd Edition) is an ISPE guideline for validating computerized systems in regulated life science industries.<br><br>
+        In pharmacovigilance, systems like <em>Oracle Argus Safety, Veeva Vault Safety, ARISg</em>, and custom reporting tools fall under GAMP 5 validation requirements because they:<br><br>
+        → Store and process patient safety data (regulated records under 21 CFR Part 11 / EMA GVP)<br>
+        → Generate regulatory submissions (ICSRs, aggregate reports)<br>
+        → Must have full audit trails<br><br>
+        GAMP 5 categorizes software into 5 categories based on complexity and risk (Cat 1 = Infrastructure → Cat 5 = Custom). Higher categories require more rigorous validation (IQ/OQ/PQ + full documentation).
+      </div></div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">What is the difference between IQ, OQ, and PQ?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        <strong>IQ — Installation Qualification:</strong> Verifies that the system is installed correctly according to approved specifications. Checks hardware, software versions, network configuration, database installation. <em>"Is it installed right?"</em><br><br>
+        <strong>OQ — Operational Qualification:</strong> Verifies that the system operates according to its functional specification in the installed environment. Tests individual functions, workflows, boundary conditions, error handling. <em>"Does it work as designed?"</em><br><br>
+        <strong>PQ — Performance Qualification:</strong> Verifies that the system consistently performs according to user requirements under real-world conditions. Uses real business scenarios and data. <em>"Does it meet user needs in practice?"</em><br><br>
+        All three must be documented with approved protocols and signed off before the system goes live.
+      </div></div>
+    </div>
+
+    <!-- Signal -->
+    <div class="card-title" style="margin-bottom:12px; margin-top:24px; font-family:'Syne',sans-serif; font-size:11px; color:var(--accent3); letter-spacing:0.1em;">SIGNALS & AGGREGATE REPORTS</div>
+
+    <div class="qa-item">
+      <div class="qa-question">What is PRR and how is a signal identified using it?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        <strong>PRR (Proportional Reporting Ratio)</strong> is a disproportionality analysis method used by EMA for signal detection in spontaneous reporting databases.<br><br>
+        <em>Formula:</em> PRR = (A/A+B) / (C/C+D)<br>
+        Where A = reports of drug X with reaction Y; B = reports of drug X without reaction Y; C = reports of all other drugs with reaction Y; D = reports of all other drugs without reaction Y.<br><br>
+        <strong>Signal threshold (Evans criteria):</strong><br>
+        → PRR ≥ 2<br>
+        → Chi-squared (χ²) ≥ 4<br>
+        → N (number of cases) ≥ 3<br><br>
+        All three must be met simultaneously for a signal to be flagged. PRR &gt; 1 means the drug is reported with that reaction more than expected compared to all other drugs.
+      </div></div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">What is the difference between a PSUR and a DSUR?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        <strong>PSUR (Periodic Safety Update Report) / PBRER:</strong><br>
+        → Submitted by MAH (Marketing Authorization Holder)<br>
+        → For <em>authorized / marketed</em> products<br>
+        → Covers post-approval safety data<br>
+        → ICH E2C(R2) guideline<br>
+        → Submitted to EMA, FDA, etc. at defined intervals (6-monthly or annual per IBD cycle)<br><br>
+        <strong>DSUR (Development Safety Update Report):</strong><br>
+        → Submitted by Clinical Trial Sponsor<br>
+        → For <em>investigational / pre-approval</em> products in clinical trials<br>
+        → Covers development phase safety data<br>
+        → ICH E2F guideline<br>
+        → Submitted annually to all regulatory authorities where trials are ongoing<br><br>
+        <em>Simple way to remember: PSUR = post-market, DSUR = development phase.</em>
+      </div></div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">What is the QPPV and what are their responsibilities?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        <strong>QPPV (Qualified Person for Pharmacovigilance)</strong> is a mandatory EU regulatory requirement under GVP Module I. Every MAH must designate a QPPV who:<br><br>
+        → Resides and operates in the EEA<br>
+        → Is the single point of contact with EMA for all PV matters<br>
+        → Has authority and oversight over the entire PV system<br>
+        → Is responsible for the PSMF (PV System Master File)<br>
+        → Ensures adequate reporting of ADRs within required timelines<br>
+        → Oversees periodic aggregate report preparation<br>
+        → Maintains awareness of all safety signals<br><br>
+        <em>The QPPV can delegate tasks but NOT ultimate responsibility. If anything goes wrong with PV compliance, the QPPV is accountable.</em>
+      </div></div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">What is MedDRA and what is its hierarchy?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        <strong>MedDRA (Medical Dictionary for Regulatory Activities)</strong> is an international standardized medical terminology used globally for coding adverse events, medical history, indications, and diagnostic procedures in PV and clinical trials.<br><br>
+        <strong>Hierarchy (5 levels, top to bottom):</strong><br><br>
+        <em>SOC</em> → System Organ Class (e.g., Cardiac disorders) — 27 SOCs<br>
+        <em>HLGT</em> → High Level Group Term (e.g., Cardiac arrhythmias)<br>
+        <em>HLT</em> → High Level Term (e.g., Rate and rhythm disorders NEC)<br>
+        <em>PT</em> → Preferred Term (e.g., Atrial fibrillation) — used for regulatory reporting<br>
+        <em>LLT</em> → Lowest Level Term (e.g., AF, Auricular fibrillation) — maps to PT<br><br>
+        <strong>SMQ (Standardised MedDRA Query):</strong> Predefined groupings of PTs used for signal detection and aggregate analysis (e.g., SMQ for Anaphylaxis, SMQ for Cardiac failure).
+      </div></div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">How do you perform causality assessment?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        Causality assessment evaluates whether there is a reasonable causal relationship between a drug and an adverse event. Key methods:<br><br>
+        <strong>WHO-UMC Scale:</strong><br>
+        → Certain: Plausible time sequence, known reaction, confirmed on rechallenge, no other explanation<br>
+        → Probable: Plausible time sequence, reasonable reaction, improves on dechallenge, other causes unlikely<br>
+        → Possible: Plausible time sequence, not a known reaction, could be due to other causes<br>
+        → Unlikely: Improbable time sequence, other causes more plausible<br>
+        → Conditional: Insufficient information to assess<br>
+        → Unassessable: Conflicting or inadequate data<br><br>
+        <strong>Naranjo Algorithm:</strong> Score-based questionnaire (10 questions) → ≥9: Definite, 5-8: Probable, 1-4: Possible, ≤0: Doubtful<br><br>
+        <em>Key factors:</em> Temporal relationship, dechallenge (stops on drug withdrawal), rechallenge (recurs on reintroduction), known pharmacology, alternative causes.
+      </div></div>
+    </div>
+  </section>
+
+  <!-- SECTION 10 -->
+  <section class="section" id="sec10">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2 class="section-title">IQVIA / CRO Context</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">🏢 IQVIA's PV Services</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li>End-to-end ICSR case processing for pharma clients</li>
+            <li>Safety database management (Argus, ARISg, Vault Safety)</li>
+            <li>Aggregate report writing (PSUR, DSUR, RMP)</li>
+            <li>Signal detection and benefit-risk assessment</li>
+            <li>Regulatory submissions (E2B R3 to EV, FDA)</li>
+            <li>QPPV services and PV system audits</li>
+            <li>Literature monitoring and screening</li>
+            <li>PV training and SOP development</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card amber">
+        <div class="card-title">💼 Common IQVIA PV Roles & Skills Expected</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li><strong>PV Associate</strong> — Case intake, triage, data entry, MedDRA coding</li>
+            <li><strong>Senior PV Scientist</strong> — Medical review, narrative writing, causality</li>
+            <li><strong>PV Systems Analyst</strong> — Argus/Vault config, GAMP 5, validation</li>
+            <li><strong>Aggregate Report Writer</strong> — PSUR/DSUR authoring, signal summary</li>
+            <li><strong>Signal Manager</strong> — PRR/ROR analysis, EVDAS, VigiBase queries</li>
+            <li><strong>Regulatory Affairs (PV)</strong> — E2B submissions, HA communications</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-title">🎯 Top Tips for PV Job Interviews (CRO / Pharma)</div>
+      <div class="card-body">
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-label">Know your 4 minimum criteria cold</div>
+            <div class="tl-text">Interviewers ask this in 80% of PV interviews. Reporter, Patient, Drug, Event — never forget.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">Understand the 7-day vs 15-day rule</div>
+            <div class="tl-text">When does the clock start? What triggers each timeline? Can you give an example?</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">Be able to explain E2B R2 vs R3 practically</div>
+            <div class="tl-text">Don't just say "XML vs SGML" — explain impact: UUID, NullFlavor, EV Gateway, ACK process.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">Relate GAMP 5 to real system work</div>
+            <div class="tl-text">Mention change control, UAT, IQ/OQ/PQ, audit trail — show you've worked in validated environments.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">Mention specific tools you've used</div>
+            <div class="tl-text">Oracle Argus, ARISg, Veeva Vault Safety, EudraVigilance EVWEB, MedDRA Browser, VigiAccess</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">Prepare a real case processing story</div>
+            <div class="tl-text">Walk through a case you processed: triage → coding → medical review → submission. Show your practical knowledge.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card purple">
+      <div class="card-title">🔑 Quick-Fire Answers — Common Rapid Questions</div>
+      <div class="card-body">
+        <div class="table-wrap" style="margin-top:12px; margin-bottom:0">
+          <table>
+            <thead><tr><th>Question</th><th>Answer</th></tr></thead>
+            <tbody>
+              <tr><td>What does IBD stand for?</td><td><strong>International Birth Date</strong> — first global marketing authorization date</td></tr>
+              <tr><td>What is a DLP?</td><td><strong>Data Lock Point</strong> — cutoff date for data included in an aggregate report</td></tr>
+              <tr><td>What is a DHPC?</td><td><strong>Direct Healthcare Professional Communication</strong> — urgent safety letter to HCPs</td></tr>
+              <tr><td>What is GVP?</td><td><strong>Good Vigilance Practice</strong> — EMA's 16-module PV guideline for the EU</td></tr>
+              <tr><td>What are SOC and PT in MedDRA?</td><td>System Organ Class (top level) and Preferred Term (used for regulatory reporting)</td></tr>
+              <tr><td>What is a CIOMS form?</td><td>Standardized paper form for reporting serious ADRs (alternative to MedWatch for non-US)</td></tr>
+              <tr><td>What triggers a SUSAR?</td><td>Serious + Unexpected + Causal relationship cannot be ruled out (in clinical trials)</td></tr>
+              <tr><td>Who is responsible for PV in EU?</td><td>QPPV — Qualified Person for Pharmacovigilance (mandatory EU designation)</td></tr>
+              <tr><td>What is an SMQ?</td><td>Standardized MedDRA Query — predefined PT groupings for signal searches</td></tr>
+              <tr><td>What is EudraVigilance?</td><td>EMA's central EU database for ICSRs on authorized medicines in the EEA</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 11 -->
+  <section class="section" id="sec11">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <h2 class="section-title">MedDRA Versions & WHO-DD</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="highlight-box">
+      <div class="hl-title">What is MedDRA?</div>
+      <p style="color:var(--text-dim); font-size:13px;"><strong style="color:var(--text)">Medical Dictionary for Regulatory Activities (MedDRA)</strong> is the international standard medical terminology used across the entire regulatory cycle — from pre-clinical to post-market. It is owned and maintained by ICH and managed operationally by MSSO (Maintenance and Support Services Organization). Every adverse event, indication, and medical history entry in an ICSR must be MedDRA-coded.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏗 MedDRA Hierarchy — 5 Levels</div>
+      <div class="card-body">
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+          <div style="background:linear-gradient(90deg,rgba(0,212,255,0.12),transparent); border-left:3px solid var(--accent); padding:12px 16px; border-radius:0 6px 6px 0;">
+            <div style="font-family:'Syne',sans-serif; font-weight:700; color:var(--accent); font-size:12px;">SOC — System Organ Class <span style="color:var(--text-muted); font-weight:400">(27 classes)</span></div>
+            <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">Top-level anatomical/physiological grouping. e.g., <em>Cardiac disorders</em>, <em>Nervous system disorders</em>, <em>Gastrointestinal disorders</em></div>
+          </div>
+          <div style="background:linear-gradient(90deg,rgba(0,212,255,0.08),transparent); border-left:3px solid rgba(0,212,255,0.6); padding:12px 16px; border-radius:0 6px 6px 0; margin-left:20px;">
+            <div style="font-family:'Syne',sans-serif; font-weight:700; color:rgba(0,212,255,0.8); font-size:12px;">HLGT — High Level Group Term</div>
+            <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">Groups HLTs. e.g., <em>Cardiac arrhythmias (incl subtypes)</em></div>
+          </div>
+          <div style="background:linear-gradient(90deg,rgba(16,185,129,0.08),transparent); border-left:3px solid rgba(16,185,129,0.6); padding:12px 16px; border-radius:0 6px 6px 0; margin-left:40px;">
+            <div style="font-family:'Syne',sans-serif; font-weight:700; color:var(--accent3); font-size:12px;">HLT — High Level Term</div>
+            <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">Groups related PTs. e.g., <em>Supraventricular arrhythmias</em></div>
+          </div>
+          <div style="background:linear-gradient(90deg,rgba(245,158,11,0.10),transparent); border-left:3px solid var(--accent4); padding:12px 16px; border-radius:0 6px 6px 0; margin-left:60px;">
+            <div style="font-family:'Syne',sans-serif; font-weight:700; color:var(--accent4); font-size:12px;">PT — Preferred Term ⭐ <span style="color:var(--text-muted); font-weight:400">(Used for regulatory reporting)</span></div>
+            <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">The primary term for coding. Unique, clinically meaningful. e.g., <em>Atrial fibrillation</em></div>
+          </div>
+          <div style="background:linear-gradient(90deg,rgba(167,139,250,0.08),transparent); border-left:3px solid rgba(167,139,250,0.5); padding:12px 16px; border-radius:0 6px 6px 0; margin-left:80px;">
+            <div style="font-family:'Syne',sans-serif; font-weight:700; color:#a78bfa; font-size:12px;">LLT — Lowest Level Term <span style="color:var(--text-muted); font-weight:400">(links to exactly 1 PT)</span></div>
+            <div style="color:var(--text-dim); font-size:12px; margin-top:4px;">Verbatim/synonymous terms that map to a PT. e.g., <em>AF</em>, <em>Auricular fibrillation</em>, <em>Atrial flutter and fibrillation</em></div>
+          </div>
+        </div>
+        <div style="margin-top:14px; font-size:12px; color:var(--text-muted); border-top:1px solid var(--border); padding-top:12px;">
+          ⚠ An AE term is always coded at <strong style="color:var(--accent4)">PT level</strong> for ICSR submission. LLT is where the verbatim term lands first, then maps up to PT. One PT can belong to <strong style="color:var(--text)">multiple SOCs</strong> (multi-axiality) but has a single <em>Primary SOC</em>.
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card amber">
+        <div class="card-title">🗓 MedDRA Version Release Cycle</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li><strong>Twice a year</strong> — March (v.x.0) and September (v.x.1)</li>
+            <li>Example: <strong>v27.0</strong> (March 2024), <strong>v27.1</strong> (Sept 2024)</li>
+            <li>Each release adds new PTs, retires obsolete LLTs, revises hierarchies</li>
+            <li>Safety databases (Argus, ARISg) must be upgraded after each release</li>
+            <li>MSSO provides full release notes and change documentation</li>
+            <li>Regulators may mandate minimum version for submissions</li>
+          </ul>
+          <div class="tags" style="margin-top:10px">
+            <span class="tag blue">March = .0 release</span>
+            <span class="tag green">Sept = .1 release</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔄 MedDRA Version Upgrade — What Changes in PV Systems</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li>New dictionary loaded into safety DB (GAMP 5 validated process)</li>
+            <li>Retired LLTs get auto-upgraded to their replacement PT/LLT</li>
+            <li>Cases coded with old terms may need recoding review</li>
+            <li>MedDRA version used must be documented in each ICSR (E2B field)</li>
+            <li>Aggregate reports must state the MedDRA version used</li>
+            <li>SMQs (Standardized MedDRA Queries) also updated each release</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card purple">
+      <div class="card-title">🔬 SMQ — Standardized MedDRA Queries</div>
+      <div class="card-body">
+        <p style="font-size:13px; margin-bottom:12px;">SMQs are <strong>validated, pre-defined groupings of MedDRA terms</strong> (PTs and LLTs) used to retrieve cases related to a specific medical condition or area of concern. They are critical tools in signal detection, aggregate reporting, and regulatory responses.</p>
+        <div class="grid-2" style="margin-top:12px">
+          <div>
+            <div style="font-family:'Syne',sans-serif; font-size:11px; color:#a78bfa; font-weight:700; margin-bottom:8px;">HOW SMQs WORK</div>
+            <ul class="clean" style="margin-top:0">
+              <li><strong>Broad scope</strong> — Captures many related PTs across SOCs</li>
+              <li><strong>Narrow scope</strong> — Targeted subset of highly specific terms</li>
+              <li>Algorithms: Simple (OR logic) or Complex (weighted scoring)</li>
+              <li>Used in signal detection queries on FAERS, EudraVigilance</li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-family:'Syne',sans-serif; font-size:11px; color:var(--accent3); font-weight:700; margin-bottom:8px;">COMMON SMQ EXAMPLES</div>
+            <ul class="clean" style="margin-top:0">
+              <li>SMQ: Anaphylactic reaction</li>
+              <li>SMQ: Cardiac failure</li>
+              <li>SMQ: Hepatotoxicity</li>
+              <li>SMQ: Embolic and thrombotic events</li>
+              <li>SMQ: Drug-induced liver injury</li>
+              <li>SMQ: Stevens-Johnson syndrome</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-title">💊 WHO Drug Dictionary (WHO-DD) — Drug Coding</div>
+      <div class="card-body">
+        <p style="font-size:13px; margin-bottom:14px;">While MedDRA codes <em>adverse events</em>, the <strong>WHO Drug Dictionary (WHO-DD)</strong> is the international standard for coding <em>medicinal products</em> in safety databases. Maintained by WHO-UMC (Uppsala Monitoring Centre).</p>
+        <div class="compare" style="margin-bottom:0">
+          <div class="compare-box left">
+            <div class="compare-head">WHO-DD Enhanced (Standard)</div>
+            <ul class="clean">
+              <li>ATC (Anatomical Therapeutic Chemical) codes</li>
+              <li>Ingredient-level coding</li>
+              <li>Medicinal product ID (MPID)</li>
+              <li>Used in most commercial safety DBs</li>
+              <li>Updated quarterly</li>
+            </ul>
+          </div>
+          <div class="compare-box right">
+            <div class="compare-head">WHO-DD Global (Newer)</div>
+            <ul class="clean">
+              <li>Combines Enhanced + reference data</li>
+              <li>Links to regulatory product IDs</li>
+              <li>Supports E2B(R3) product coding</li>
+              <li>Aligns with IDMP standards</li>
+              <li>Preferred for new implementations</li>
+            </ul>
+          </div>
+        </div>
+        <div style="margin-top:14px; font-size:12px; color:var(--text-dim);">
+          <strong style="color:var(--text);">Why it matters in interviews:</strong> When a reporter says "I gave the patient Aspirin 100mg" — the system must map that to the correct WHO-DD entry with ATC code <em>B01AC06</em>. Coding must capture: drug name, dose, route, formulation, and ATC classification. The version of WHO-DD used must be documented in the case.
+        </div>
+      </div>
+    </div>
+
+    <div class="card red">
+      <div class="card-title">❓ Interview Q: MedDRA & WHO-DD</div>
+      <div class="card-body">
+        <div class="qa-item" style="margin-bottom:10px">
+          <div class="qa-question">What is multi-axiality in MedDRA?<span class="qa-icon">+</span></div>
+          <div class="qa-answer"><div class="qa-answer-inner">
+            Multi-axiality means a single <strong>PT (Preferred Term)</strong> can be linked to more than one SOC. For example, "Atrial fibrillation" belongs primarily to <em>Cardiac disorders</em> SOC, but can also be associated with <em>Investigations</em> SOC when it appears as an ECG finding.<br><br>
+            However, each PT has only <em>one Primary SOC</em> which is used for ICSR tabulations and regulatory submissions. Secondary SOCs exist for cross-referencing. Interviewers test this to see if you understand why the same event might appear under different SOCs in different contexts.
+          </div></div>
+        </div>
+        <div class="qa-item">
+          <div class="qa-question">What is the difference between LLT and PT, and which do you submit?<span class="qa-icon">+</span></div>
+          <div class="qa-answer"><div class="qa-answer-inner">
+            <strong>LLT (Lowest Level Term)</strong> is where the verbatim (reporter's exact words) term is first mapped. It is the most granular level and may include synonyms, abbreviations, or old terms. Each LLT maps to exactly one PT.<br><br>
+            <strong>PT (Preferred Term)</strong> is the standardized, unique clinical concept. It is the level used for all regulatory reporting and submission in E2B files.<br><br>
+            <em>Workflow:</em> Reporter says "heart pounding" → LLT: Palpitations → PT: <strong>Palpitations</strong> → submitted in ICSR.<br><br>
+            <em>Key rule:</em> You always submit at <strong>PT level</strong>. The LLT is retained in the system for verbatim traceability but regulators receive the PT.
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 12 -->
+  <section class="section" id="sec12">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <h2 class="section-title">Blinded vs Unblinded Reports</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="highlight-box">
+      <div class="hl-title">Why Blinding Matters in PV</div>
+      <p style="color:var(--text-dim); font-size:13px;">In <strong style="color:var(--text)">clinical trials (study cases)</strong>, blinding protects the integrity of the trial. Participants and/or investigators do not know which treatment (active drug or placebo) a patient received. PV must handle adverse event reporting while <strong style="color:var(--text)">preserving this blind</strong> — which creates specific rules for how drug information appears in ICSRs, SUSARs, and aggregate reports like the DSUR.</p>
+    </div>
+
+    <!-- Visual Demo -->
+    <div class="card">
+      <div class="card-title">🖥 Visual Example — Blinded vs Unblinded ICSR Drug Section</div>
+      <div class="card-body">
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">The same case — same patient, same event — looks different depending on blinding status:</p>
+
+        <div class="compare">
+          <div class="compare-box left" style="border-top-color:#ef4444;">
+            <div class="compare-head" style="color:#f87171;">🔒 BLINDED Report (Study Case)</div>
+            <div style="background:var(--bg); border-radius:6px; padding:14px; margin-bottom:12px; font-size:12px; border:1px solid #1e2d45;">
+              <div style="color:var(--text-muted); font-size:10px; font-family:'Syne',sans-serif; letter-spacing:0.1em; margin-bottom:8px;">G — DRUG INFORMATION</div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <span style="color:var(--text-dim);">Drug Name:</span>
+                <span style="color:#f87171; font-weight:600;">STUDY MEDICATION</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <span style="color:var(--text-dim);">Study Number:</span>
+                <span style="color:var(--text);">STUDY-2024-001</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <span style="color:var(--text-dim);">Study Arm:</span>
+                <span style="color:#f87171;">BLINDED / NOT DISCLOSED</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <span style="color:var(--text-dim);">Dose:</span>
+                <span style="color:var(--text);">100mg BID</span>
+              </div>
+              <div style="display:flex; justify-content:space-between;">
+                <span style="color:var(--text-dim);">Drug Role:</span>
+                <span style="color:var(--text);">Suspect</span>
+              </div>
+            </div>
+            <ul class="clean" style="margin-top:0">
+              <li>Actual drug name <strong style="color:#f87171">NOT shown</strong> — replaced with study name/code</li>
+              <li>Treatment arm hidden (active vs placebo unknown)</li>
+              <li>Study number & protocol number visible</li>
+              <li>Preserves trial integrity — no unblinding of site/sponsor</li>
+              <li>Submitted to regulators <em>as blinded</em> during trial conduct</li>
+              <li>Used in: <strong>SUSAR expedited reports, DSUR</strong></li>
+            </ul>
+          </div>
+
+          <div class="compare-box right" style="border-top-color:#10b981;">
+            <div class="compare-head" style="color:#34d399;">🔓 UNBLINDED Report (Unblinded / PM Case)</div>
+            <div style="background:var(--bg); border-radius:6px; padding:14px; margin-bottom:12px; font-size:12px; border:1px solid #1e2d45;">
+              <div style="color:var(--text-muted); font-size:10px; font-family:'Syne',sans-serif; letter-spacing:0.1em; margin-bottom:8px;">G — DRUG INFORMATION</div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <span style="color:var(--text-dim);">Drug Name:</span>
+                <span style="color:#34d399; font-weight:600;">ATORVASTATIN 40mg</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <span style="color:var(--text-dim);">Manufacturer:</span>
+                <span style="color:var(--text);">Pharma Corp Ltd</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <span style="color:var(--text-dim);">Route:</span>
+                <span style="color:var(--text);">Oral</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <span style="color:var(--text-dim);">Dose:</span>
+                <span style="color:var(--text);">40mg OD</span>
+              </div>
+              <div style="display:flex; justify-content:space-between;">
+                <span style="color:var(--text-dim);">Drug Role:</span>
+                <span style="color:var(--text);">Suspect</span>
+              </div>
+            </div>
+            <ul class="clean" style="margin-top:0">
+              <li>Full drug name, dose, manufacturer <strong style="color:#34d399">fully visible</strong></li>
+              <li>All concomitant medications also fully listed</li>
+              <li>Treatment arm and assignment known</li>
+              <li>Used for: <strong>post-marketing ICSRs, unblinded SUSARs</strong></li>
+              <li>Mandatory for EudraVigilance / FAERS submissions</li>
+              <li>Used in: <strong>PSUR, signal detection, aggregate analysis</strong></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Study vs PM -->
+    <div class="card amber">
+      <div class="card-title">📊 Study Cases vs Post-Marketing Cases — Full Comparison</div>
+      <div class="table-wrap" style="margin-top:12px; margin-bottom:0">
+        <table>
+          <thead>
+            <tr>
+              <th>Aspect</th>
+              <th>Study / Clinical Trial Case</th>
+              <th>Post-Marketing (PM) Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Source</strong></td><td>Clinical trial investigators, CRO, sponsor</td><td>HCPs, patients, literature, regulatory authorities</td></tr>
+            <tr><td><strong>Drug disclosure</strong></td><td>Blinded (study medication / protocol code) or unblinded if SAE unblinded</td><td>Always unblinded — full drug name and details</td></tr>
+            <tr><td><strong>Term used</strong></td><td>SAE (Serious Adverse Event) or SUSAR</td><td>ADR / SADR (post-market terminology)</td></tr>
+            <tr><td><strong>Reference document</strong></td><td>Investigator's Brochure (IB) — defines expectedness</td><td>SmPC / CCDS — defines expectedness</td></tr>
+            <tr><td><strong>Reporting timeline trigger</strong></td><td>SUSAR = 7/15 days (unexpected serious)</td><td>Serious unexpected ADR = 15 days</td></tr>
+            <tr><td><strong>Submitted to</strong></td><td>Competent authorities + Ethics Committees; also DSUR</td><td>EudraVigilance, FAERS, PMDA; also PSUR/PBRER</td></tr>
+            <tr><td><strong>Aggregate report</strong></td><td>DSUR (Development Safety Update Report)</td><td>PSUR / PBRER (Periodic Benefit-Risk Evaluation)</td></tr>
+            <tr><td><strong>Drug in narrative</strong></td><td>"Patient received study medication per protocol" — no name disclosed</td><td>Full product name, brand name, batch number included</td></tr>
+            <tr><td><strong>Unblinding event</strong></td><td>If SUSAR — unblinding by sponsor/DSMB; blinded version still sent to sites</td><td>Not applicable — always unblinded</td></tr>
+            <tr><td><strong>Causality assessment</strong></td><td>Investigator + Sponsor both provide separate assessments</td><td>Reporter's assessment + MAH assessment</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Unblinding process -->
+    <div class="card">
+      <div class="card-title">🔓 The Unblinding Process — When & How It Happens</div>
+      <div class="card-body">
+        <p style="font-size:13px; margin-bottom:16px;">Unblinding of a clinical trial case is a critical decision. It should only happen when <strong>strictly necessary</strong> to protect patient safety or meet regulatory requirements.</p>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-label">SAE Occurs in a Blinded Trial</div>
+            <div class="tl-text">Investigator reports the SAE. Case is received blinded — drug field shows "study medication / [protocol code]". The 15-day reporting clock starts from receipt.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">SUSAR Assessment — Is Unblinding Required?</div>
+            <div class="tl-text">Safety team assesses: Is the event serious? Is it unexpected per the IB? Can the relationship be excluded? If YES to all → it is a <strong>SUSAR candidate</strong> → unblinding is triggered.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">Unblinding by Sponsor (Breaking the Code)</div>
+            <div class="tl-text">Only the unblinded pharmacovigilance team (firewall team) or DSMB (Data Safety Monitoring Board) breaks the blind. The patient's treatment allocation is revealed. The rest of the trial team remains blinded.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">Two Reports Generated</div>
+            <div class="tl-text"><strong>Unblinded SUSAR</strong> → Submitted to regulatory authorities (EudraVigilance, competent authority). Contains full drug name.<br><br><strong>Blinded version</strong> → Sent to investigators and Ethics Committees. Drug name still masked as "study medication". Protects trial integrity at site level.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-label">DSUR Inclusion</div>
+            <div class="tl-text">All SUSARs (unblinded and blinded) are listed in the annual DSUR. Unblinded line listings go to regulatory authorities; blinded listings go to sites/ECs where necessary.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blinded report rules -->
+    <div class="grid-2">
+      <div class="card green">
+        <div class="card-title">📋 What IS Visible in a Blinded Submission</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li>Study number / Protocol number</li>
+            <li>Study phase (Phase I, II, III)</li>
+            <li>Study arm label (Arm A / Arm B — not which drug)</li>
+            <li>Dose level (e.g., 100mg — if dose itself isn't unblinding)</li>
+            <li>Route of administration</li>
+            <li>Start and stop dates of study medication</li>
+            <li>Indication being studied</li>
+            <li>Patient demographics (age, sex, weight)</li>
+            <li>Event details (MedDRA coded, outcome, dates)</li>
+            <li>Investigator causality assessment</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card red">
+        <div class="card-title">🚫 What is HIDDEN in a Blinded Submission</div>
+        <div class="card-body">
+          <ul class="clean" style="margin-top:0">
+            <li>Actual drug name (INN or brand)</li>
+            <li>Drug formulation / manufacturer details</li>
+            <li>Treatment arm assignment (active vs placebo)</li>
+            <li>Batch / lot number of study drug</li>
+            <li>Sponsor's causality assessment (based on unblinded data)</li>
+            <li>Any information that reveals treatment allocation</li>
+            <li>Comparator drug identity (if active control trial)</li>
+          </ul>
+          <div style="margin-top:12px; font-size:12px; color:var(--text-muted);">The narrative will say: <em style="color:var(--accent4);">"The patient received study medication as per the protocol schedule."</em></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- E2B fields -->
+    <div class="card purple">
+      <div class="card-title">📦 How Blinding Reflects in E2B(R3) XML Fields</div>
+      <div class="table-wrap" style="margin-top:12px; margin-bottom:0">
+        <table>
+          <thead>
+            <tr><th>E2B Field</th><th>Blinded (Study)</th><th>Unblinded / PM</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>G.k.2.2 — Drug Name</strong></td><td>Study medication / Protocol code (e.g., "XYZ-001-IMP")</td><td>Full INN or brand name (e.g., "Atorvastatin")</td></tr>
+            <tr><td><strong>G.k.2.3 — WHO Drug Dictionary</strong></td><td>Not populated (unknown/blinded)</td><td>WHO-DD coded entry with MPID</td></tr>
+            <tr><td><strong>C.5 — Study Info</strong></td><td>Populated: study number, study type, study phase</td><td>Populated only if study-related; often blank for PM</td></tr>
+            <tr><td><strong>G.k.1 — Drug Role</strong></td><td>Suspect (suspected study medication)</td><td>Suspect / Concomitant / Interacting</td></tr>
+            <tr><td><strong>H — Narrative</strong></td><td>Describes event without revealing treatment; uses protocol language</td><td>Full drug name, dose, and regimen stated explicitly</td></tr>
+            <tr><td><strong>G.k.8 — Action taken</strong></td><td>Study drug discontinued / dose reduced (no name)</td><td>Drug name + action fully stated</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Interview QA -->
+    <div class="card-title" style="margin-bottom:12px; margin-top:24px; font-family:'Syne',sans-serif; font-size:11px; color:var(--accent); letter-spacing:0.1em;">BLINDING Q&A — INTERVIEW QUESTIONS</div>
+
+    <div class="qa-item">
+      <div class="qa-question">Why is blinding maintained in clinical trial ICSRs even when reporting to regulators?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        The key principle is <strong>protecting trial integrity</strong>. If drug identity were revealed in expedited reports sent to all investigators and ethics committees, it could introduce bias — investigators might alter their clinical judgment, patients might withdraw, or the trial's statistical validity could be compromised.<br><br>
+        Regulatory authorities (<em>competent authorities</em>) <strong>do receive unblinded SUSARs</strong> — they need the full picture for safety oversight. However, the blinded version is sent to investigators and ethics committees to keep the trial uncontaminated.<br><br>
+        This is why two parallel reports are often generated for a SUSAR: one unblinded for regulators, one blinded for sites.
+      </div></div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">What happens when an SAE in a clinical trial is NOT a SUSAR?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        An SAE that does NOT meet SUSAR criteria (i.e., it is <em>expected</em> per the IB, or the drug relationship is clearly excluded) is:<br><br>
+        → Still documented and tracked in the safety database<br>
+        → Not subject to expedited 7/15-day reporting<br>
+        → Included in <strong>aggregate reporting</strong> — the DSUR (line listings of all SAEs)<br>
+        → The drug field remains <strong>blinded</strong> in the DSUR line listing sent to sites<br><br>
+        The DSUR submitted to regulatory authorities contains unblinded data; the version for investigators/ECs may be blinded depending on regional requirements.
+      </div></div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">In a post-marketing case, what is always different from a study case in the drug section?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        In a <strong>post-marketing (PM) case</strong>:<br><br>
+        → Drug name is <em>always fully disclosed</em> — INN (International Nonproprietary Name) and/or brand name<br>
+        → WHO-DD coded entry with ATC code is populated<br>
+        → Batch/lot number may be included (especially for biologics or vaccine cases)<br>
+        → All concomitant medications are also fully named<br>
+        → There is no study number — the C.5 study section is not applicable<br>
+        → The narrative states the drug explicitly: <em>"The patient was taking Atorvastatin 40mg once daily..."</em><br><br>
+        Contrast this with a blinded study case where you would read: <em>"The patient was receiving study medication as per Protocol STUDY-2024-001."</em>
+      </div></div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-question">Who can unblind a clinical trial case, and what controls exist?<span class="qa-icon">+</span></div>
+      <div class="qa-answer"><div class="qa-answer-inner">
+        Unblinding is a <strong>controlled, documented process</strong> governed by the clinical trial protocol and SOPs. Key controls:<br><br>
+        <strong>Who can unblind:</strong><br>
+        → The <em>Sponsor's unblinded pharmacovigilance team</em> (firewall team)<br>
+        → The <em>DSMB / IDMC</em> (Data Safety Monitoring Board / Independent Data Monitoring Committee)<br>
+        → In emergencies: the treating physician can request emergency unblinding via 24/7 code break<br><br>
+        <strong>Controls:</strong><br>
+        → Emergency unblinding instructions and sealed envelopes / electronic code-break at site<br>
+        → Code-break is logged in audit trail with reason, date, time, person<br>
+        → The blind must not be broken unnecessarily — <em>all unblinding decisions are documented</em><br>
+        → Investigators who unblind are usually removed from the trial to prevent bias
+      </div></div>
+    </div>
+  </section>
+
+  <div style="text-align:center; padding: 40px 0 20px; color:var(--text-muted); font-size:11px; font-family:'Syne',sans-serif; letter-spacing:0.1em;">
+    PHARMACOVIGILANCE INTERVIEW PREP — PREPARED FOR IQVIA → NEXT ROLE<br>
+    <span style="color:var(--border)">All content based on ICH guidelines, GVP modules, WHO-PV guidelines, and FDA CFR</span>
+  </div>
+
+</div>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const scrollTop = document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / scrollHeight) * 100;
+    document.getElementById('progress').style.width = progress + '%';
+  });
+
+  // Q&A accordion
+  document.querySelectorAll('.qa-question').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.parentElement;
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.qa-item.open').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+
+  // Search
+  const searchInput = document.getElementById('searchInput');
+  const searchClear = document.getElementById('searchClear');
+  const sections = document.querySelectorAll('.section');
+
+  function clearHighlights() {
+    document.querySelectorAll('.highlight-match').forEach(el => {
+      el.outerHTML = el.textContent;
+    });
+  }
+
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim().toLowerCase();
+    searchClear.classList.toggle('visible', query.length > 0);
+    clearHighlights();
+
+    if (!query) {
+      sections.forEach(s => s.classList.remove('hidden'));
+      return;
+    }
+
+    sections.forEach(section => {
+      const text = section.textContent.toLowerCase();
+      if (text.includes(query)) {
+        section.classList.remove('hidden');
+      } else {
+        section.classList.add('hidden');
+      }
+    });
+  });
+
+  searchClear.addEventListener('click', () => {
+    searchInput.value = '';
+    searchClear.classList.remove('visible');
+    clearHighlights();
+    sections.forEach(s => s.classList.remove('hidden'));
+    searchInput.focus();
+  });
+
+  // TOC smooth scroll
+  document.querySelectorAll('.toc-link').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Ensure it's visible if hidden by search
+        target.classList.remove('hidden');
+      }
+    });
+  });
+
+  // Stagger section animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationDelay = '0s';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
